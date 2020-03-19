@@ -386,7 +386,7 @@ let entity_valid_validated_attribute = """
 let entity_all_relationships_optional_and_omitted = """
 {
 	"id": "1",
-	"type": "twelfth_test_entities",
+	"type": "fifth_test_entities",
 	"attributes": {
 		"number": 10
 	}

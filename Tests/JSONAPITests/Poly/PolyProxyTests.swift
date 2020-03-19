@@ -128,7 +128,9 @@ extension Poly2: ResourceObjectProxy, JSONTyped where A == PolyProxyTests.UserA,
 			return Id(rawValue: a.id.rawValue)
 		case .b(let b):
 			return Id(rawValue: b.id.rawValue)
-		}
+        case .none:
+            return Id(rawValue: "")
+        }
 	}
 
 	public var attributes: SharedUserDescription.Attributes {
@@ -137,7 +139,9 @@ extension Poly2: ResourceObjectProxy, JSONTyped where A == PolyProxyTests.UserA,
 			return .init(name: .init(value: "\(a.firstName) \(a.lastName)"), x: .init(x: "y"))
 		case .b(let b):
 			return .init(name: .init(value: b.name.joined(separator: " ")), x: .init(x: "y"))
-		}
+        case .none:
+            return .init(name: .init(value: ""), x: .init(x: ""))
+        }
 	}
 
 	public var relationships: NoRelationships {
