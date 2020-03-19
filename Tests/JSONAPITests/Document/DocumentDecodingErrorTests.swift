@@ -77,48 +77,20 @@ final class DocumentDecodingErrorTests: XCTestCase {
             XCTAssertEqual(String(describing: error), "Primary Resource 2 failed to parse because 'author' relationship is required and missing.")
         }
     }
-
-    func test_include_failure() {
-        XCTAssertThrowsError(
-            try testDecoder.decode(
+    
+    func test_always_valid_includes() {
+        let sut = (try? testDecoder
+            .decode(
                 Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
-                from: single_document_some_includes_wrong_type
-            )
-        ) { error in
-            guard let docError = error as? DocumentDecodingError,
-                case .includes = docError else {
-                    XCTFail("Expected primary resource document error. Got \(error)")
-                    return
-            }
-
-            XCTAssertEqual(String(describing: error), #"Include 3 failed to parse: found JSON:API type "not_an_author" but expected "authors""#)
-        }
-    }
-
-    func test_include_failure2() {
-        XCTAssertThrowsError(
-            try testDecoder.decode(
-                Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include2<Article, Author>, NoAPIDescription, UnknownJSONAPIError>.self,
-                from: single_document_some_includes_wrong_type
-            )
-        ) { error in
-            guard let docError = error as? DocumentDecodingError,
-                case .includes = docError else {
-                    XCTFail("Expected primary resource document error. Got \(error)")
-                    return
-            }
-
-            XCTAssertEqual(String(describing: error),
-#"""
-Include 3 failed to parse: 
-Could not have been Include Type 1 because:
-found JSON:API type "not_an_author" but expected "articles"
-
-Could not have been Include Type 2 because:
-found JSON:API type "not_an_author" but expected "authors"
-"""#
-            )
-        }
+                from: single_document_some_unknown_includes))
+        
+        let allIncludes = sut?.body.includes?.count
+        let authorCases = sut?.body.includes?[Author.self].count
+        let noneCases = sut?.body.includes?.values.filter { $0 == .none }.count
+        
+        XCTAssertEqual(allIncludes, 3)
+        XCTAssertEqual(authorCases, 2)
+        XCTAssertEqual(noneCases, 1)
     }
 
     func test_wantSuccess_foundError() {
