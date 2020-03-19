@@ -258,7 +258,7 @@ let single_document_some_includes = """
 }
 """.data(using: .utf8)!
 
-let single_document_some_includes_wrong_type = """
+let single_document_some_unknown_includes = """
 {
     "data": {
         "id": "1",

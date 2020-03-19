@@ -500,13 +500,13 @@ extension ResourceObjectTests {
 	}
 
 	func test_optionalNullableRelationshipOmitted() {
-		let entity = decoded(type: TestEntity12.self,
+		let entity = decoded(type: TestEntity15.self,
 							 data: entity_all_relationships_optional_and_omitted)
 
 		XCTAssertNil(entity ~> \.optionalOne)
 		XCTAssertNil(entity ~> \.optionalNullableOne)
 		XCTAssertNil(entity ~> \.optionalMany)
-		XCTAssertNoThrow(try TestEntity12.check(entity))
+		XCTAssertNoThrow(try TestEntity15.check(entity))
 	}
 
 	func test_nullableRelationshipIsNull() {
@@ -1006,8 +1006,21 @@ extension ResourceObjectTests {
 
 	typealias TestEntity11 = BasicEntity<TestEntityType11>
 
-	enum TestEntityType12: ResourceObjectDescription {
-		public static var jsonType: String { return "twelfth_test_entities" }
+    enum TestEntityType12: ResourceObjectDescription {
+        public static var jsonType: String { return "eleventh_test_entities" }
+
+        public struct Attributes: JSONAPI.Attributes {
+            let number: ValidatedAttribute<Int, IntOver10>
+        }
+
+        typealias Relationships = NoRelationships
+    }
+
+    typealias TestEntity12 = BasicEntity<TestEntityType12>
+
+    
+	enum TestEntityType15: ResourceObjectDescription {
+		public static var jsonType: String { return "fifth_test_entities" }
 
 		typealias Attributes = NoAttributes
 
@@ -1026,7 +1039,7 @@ extension ResourceObjectTests {
 		}
 	}
 
-	typealias TestEntity12 = BasicEntity<TestEntityType12>
+	typealias TestEntity15 = BasicEntity<TestEntityType15>
 
 	enum UnidentifiedTestEntityType: ResourceObjectDescription {
 		public static var jsonType: String { return "unidentified_test_entities" }
