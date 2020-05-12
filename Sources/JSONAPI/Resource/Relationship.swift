@@ -134,7 +134,7 @@ public protocol OptionalRelatable: Identifiable where Identifier == Wrapped.Iden
 extension Optional: Identifiable, OptionalRelatable, JSONTyped where Wrapped: JSONAPI.Relatable {
     public typealias Identifier = Wrapped.Identifier?
 
-    public static var jsonType: String { return Wrapped.jsonType }
+    public static var jsonType: String? { return Wrapped.jsonType }
 }
 
 // MARK: Codable
@@ -196,7 +196,7 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
                                                   path: context.codingPath)
         }
 
-        let type = try identifier.decode(String.self, forKey: .entityType)
+        let type = try identifier.decode(Optional<String>.self, forKey: .entityType)
 
         guard type == Identifiable.jsonType else {
             throw JSONAPICodingError.typeMismatch(expected: Identifiable.jsonType, found: type, path: decoder.codingPath)

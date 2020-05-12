@@ -16,7 +16,7 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         case keyNotFound
         case valueNotFound
         case typeMismatch(expectedTypeName: String)
-        case jsonTypeMismatch(expectedType: String, foundType: String)
+        case jsonTypeMismatch(expectedType: String?, foundType: String?)
         case quantityMismatch(expected: JSONAPICodingError.Quantity)
     }
 
@@ -65,7 +65,7 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         }
     }
 
-    init(expectedJSONAPIType: String, found: String) {
+    init(expectedJSONAPIType: String?, found: String?) {
         location = .type
         subjectName = "self"
         cause = .jsonTypeMismatch(expectedType: expectedJSONAPIType, foundType: found)
@@ -117,9 +117,9 @@ extension ResourceObjectDecodingError: CustomStringConvertible {
         case .typeMismatch(expectedTypeName: let expected):
             return "'\(subjectName)' \(location.singular) is not a \(expected) as expected."
         case .jsonTypeMismatch(expectedType: let expected, foundType: let found) where location == .type:
-            return "found JSON:API type \"\(found)\" but expected \"\(expected)\""
+            return "found JSON:API type \"\(found ?? "unexpected")\" but expected \"\(expected ?? "unexpected")\""
         case .jsonTypeMismatch(expectedType: let expected, foundType: let found):
-            return "'\(subjectName)' \(location.singular) is of JSON:API type \"\(found)\" but it was expected to be \"\(expected)\""
+            return "'\(subjectName)' \(location.singular) is of JSON:API type \"\(found ?? "unexpected")\" but it was expected to be \"\(expected ?? "unexpected")\""
         case .quantityMismatch(expected: let expected):
             let expecation: String = {
                 switch expected {

@@ -48,7 +48,7 @@ extension NoAttributes: CustomStringConvertible {
 /// Something that is JSONTyped provides a String representation
 /// of its type.
 public protocol JSONTyped {
-    static var jsonType: String { get }
+    static var jsonType: String? { get }
 }
 
 /// A `ResourceObjectProxyDescription` is an `ResourceObjectDescription`
@@ -93,7 +93,7 @@ public protocol ResourceObjectProxy: Equatable, JSONTyped {
 
 extension ResourceObjectProxy {
     /// The JSON API compliant "type" of this `ResourceObject`.
-    public static var jsonType: String { return Description.jsonType }
+    public static var jsonType: String? { return Description.jsonType }
 }
 
 /// A marker protocol.
@@ -414,13 +414,7 @@ public extension ResourceObject {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
 
-        let type: String
-        do {
-            type = try container.decode(String.self, forKey: .type)
-        } catch let error as DecodingError {
-            throw ResourceObjectDecodingError(error)
-                ?? error
-        }
+        let type: String? = try? container.decode(Optional<String>.self, forKey: .type)
 
         guard ResourceObject.jsonType == type else {
             throw ResourceObjectDecodingError(
@@ -430,7 +424,8 @@ public extension ResourceObject {
         }
 
         let maybeUnidentified = Unidentified() as? EntityRawIdType
-        id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
+        id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) }
+            ?? container.decode(ResourceObject.Id.self, forKey: .id)
 
         do {
             attributes = try (NoAttributes() as? Description.Attributes)

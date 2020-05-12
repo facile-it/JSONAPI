@@ -6,7 +6,7 @@
 //
 
 public enum JSONAPICodingError: Swift.Error {
-    case typeMismatch(expected: String, found: String, path: [CodingKey])
+    case typeMismatch(expected: String?, found: String?, path: [CodingKey])
     case quantityMismatch(expected: Quantity, path: [CodingKey])
     case illegalEncoding(String, path: [CodingKey])
     case illegalDecoding(String, path: [CodingKey])
