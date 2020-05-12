@@ -115,7 +115,7 @@ final class SuccessAndErrorDocumentTests: XCTestCase {
 // MARK: - Test Type
 extension SuccessAndErrorDocumentTests {
     enum TestTypeDescription: ResourceObjectDescription {
-        static let jsonType: String = "tests"
+        static let jsonType: String? = "tests"
 
         typealias Attributes = NoAttributes
 

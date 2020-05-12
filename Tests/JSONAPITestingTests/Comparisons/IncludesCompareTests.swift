@@ -205,7 +205,7 @@ final class IncludesCompareTests: XCTestCase {
 }
 
 private enum TestDescription1: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "test_type1"
+    static let jsonType: String? = "test_type1"
 
     struct Attributes: JSONAPI.Attributes {
         let name: Attribute<String>
@@ -222,7 +222,7 @@ private enum TestDescription1: JSONAPI.ResourceObjectDescription {
 private typealias TestType1 = ResourceObject<TestDescription1, NoMetadata, NoLinks, String>
 
 private enum TestDescription2: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "test_type2"
+    static let jsonType: String? = "test_type2"
 
     struct Attributes: JSONAPI.Attributes {
         let name: Attribute<String>

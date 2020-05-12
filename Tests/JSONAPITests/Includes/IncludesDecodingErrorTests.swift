@@ -22,7 +22,7 @@ extension IncludesDecodingErrorTests {
 
         typealias Relationships = NoRelationships
 
-        public static var jsonType: String { return "test_entity1" }
+        public static var jsonType: String? { return "test_entity1" }
 
         public struct Attributes: JSONAPI.SparsableAttributes {
             let foo: Attribute<String>
@@ -39,7 +39,7 @@ extension IncludesDecodingErrorTests {
 
     enum TestEntityType2: ResourceObjectDescription {
 
-        public static var jsonType: String { return "test_entity2" }
+        public static var jsonType: String? { return "test_entity2" }
 
         public struct Relationships: JSONAPI.Relationships {
             let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
@@ -64,7 +64,7 @@ extension IncludesDecodingErrorTests {
 
         typealias Relationships = NoRelationships
 
-        public static var jsonType: String { return "test_entity4" }
+        public static var jsonType: String? { return "test_entity4" }
     }
 
     typealias TestEntity4 = BasicEntity<TestEntityType4>
@@ -73,7 +73,7 @@ extension IncludesDecodingErrorTests {
 
         typealias Attributes = NoAttributes
 
-        public static var jsonType: String { return "test_entity6" }
+        public static var jsonType: String? { return "test_entity6" }
 
         struct Relationships: JSONAPI.Relationships {
             let entity4: ToOneRelationship<TestEntity4, NoMetadata, NoLinks>

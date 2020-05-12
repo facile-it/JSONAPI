@@ -192,7 +192,7 @@ extension ResourceBodyTests {
 extension ResourceBodyTests {
 
     enum ArticleType: ResourceObjectDescription {
-        public static var jsonType: String { return "articles" }
+        public static var jsonType: String? { return "articles" }
 
         typealias Relationships = NoRelationships
 

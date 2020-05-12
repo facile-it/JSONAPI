@@ -137,7 +137,7 @@ final class ResourceObjectCompareTests: XCTestCase {
 }
 
 private enum TestDescription: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "test_type"
+    static let jsonType: String? = "test_type"
 
     struct Attributes: JSONAPI.Attributes {
         let name: Attribute<String>
@@ -170,7 +170,7 @@ private struct TestLinks: JSONAPI.Links, CustomStringConvertible {
 }
 
 private enum TestDescription2: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "test_type2"
+    static let jsonType: String? = "test_type2"
 
     typealias Attributes = NoAttributes
 

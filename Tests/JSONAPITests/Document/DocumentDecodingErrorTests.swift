@@ -119,7 +119,7 @@ final class DocumentDecodingErrorTests: XCTestCase {
 // MARK: - Test Types
 extension DocumentDecodingErrorTests {
     enum AuthorType: ResourceObjectDescription {
-        static var jsonType: String { return "authors" }
+        static var jsonType: String? { return "authors" }
 
         typealias Attributes = NoAttributes
         typealias Relationships = NoRelationships
@@ -128,7 +128,7 @@ extension DocumentDecodingErrorTests {
     typealias Author = BasicEntity<AuthorType>
 
     enum ArticleType: ResourceObjectDescription {
-        static var jsonType: String { return "articles" }
+        static var jsonType: String? { return "articles" }
 
         typealias Attributes = NoAttributes
 
@@ -140,7 +140,7 @@ extension DocumentDecodingErrorTests {
     typealias Article = BasicEntity<ArticleType>
 
     enum BookType: ResourceObjectDescription {
-        static var jsonType: String { return "books" }
+        static var jsonType: String? { return "books" }
 
         struct Attributes: JSONAPI.SparsableAttributes {
             let pageCount: Attribute<Int>

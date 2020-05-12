@@ -127,7 +127,7 @@ final class ResourceObjectReplacingTests: XCTestCase {
 }
 
 private enum MutableTestDescription: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "test"
+    static let jsonType: String? = "test"
 
     struct Attributes: JSONAPI.Attributes {
         var name: Attribute<String>
@@ -141,7 +141,7 @@ private enum MutableTestDescription: JSONAPI.ResourceObjectDescription {
 private typealias MutableTestType = JSONAPI.ResourceObject<MutableTestDescription, NoMetadata, NoLinks, String>
 
 private enum ImmutableTestDescription: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "test2"
+    static let jsonType: String? = "test2"
 
     struct Attributes: JSONAPI.Attributes {
         let name: Attribute<String>

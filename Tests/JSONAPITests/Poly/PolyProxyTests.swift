@@ -86,7 +86,7 @@ public class PolyProxyTests: XCTestCase {
 // MARK: - Test types
 public extension PolyProxyTests {
 	enum UserDescription1: ResourceObjectDescription {
-		public static var jsonType: String { return "users" }
+		public static var jsonType: String? { return "users" }
 
 		public struct Attributes: JSONAPI.Attributes {
 			let firstName: Attribute<String>
@@ -97,7 +97,7 @@ public extension PolyProxyTests {
 	}
 
 	enum UserDescription2: ResourceObjectDescription {
-		public static var jsonType: String { return "users" }
+		public static var jsonType: String? { return "users" }
 
 		public struct Attributes: JSONAPI.Attributes {
 			let name: Attribute<[String]>
@@ -149,7 +149,7 @@ extension Poly2: ResourceObjectProxy, JSONTyped where A == PolyProxyTests.UserA,
 	}
 
 	public enum SharedUserDescription: ResourceObjectProxyDescription {
-		public static var jsonType: String { return A.jsonType }
+		public static var jsonType: String? { return A.jsonType }
 
 		public struct Attributes: Equatable {
 			let name: Attribute<String>

@@ -145,7 +145,7 @@ final class RelationshipsCompareTests: XCTestCase {
 // MARK: - Test Types
 extension RelationshipsCompareTests {
     enum TestTypeDescription: ResourceObjectDescription {
-        static let jsonType: String = "test"
+        static let jsonType: String? = "test"
 
         typealias Attributes = NoAttributes
         typealias Relationships = NoRelationships

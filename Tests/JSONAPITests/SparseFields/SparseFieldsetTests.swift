@@ -207,7 +207,7 @@ class SparseFieldsetTests: XCTestCase {
 }
 
 struct EverythingTestDescription: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "everything"
+    static let jsonType: String? = "everything"
 
     struct Attributes: JSONAPI.SparsableAttributes {
         let bool: Attribute<Bool>

@@ -350,15 +350,19 @@ extension ResourceObjectDecodingErrorTests {
             XCTAssertEqual(
                 error as? ResourceObjectDecodingError,
                 ResourceObjectDecodingError(
-                    subjectName: "type",
-                    cause: .typeMismatch(expectedTypeName: String(describing: String.self)),
+                    subjectName: "self",
+                    cause: .jsonTypeMismatch(expectedType: "fourteenth_test_entities", foundType: nil),
                     location: .type
                 )
             )
-
+            
             XCTAssertEqual(
                 (error as? ResourceObjectDecodingError)?.description,
-                #"'type' (a.k.a. the JSON:API type name) is not a String as expected."#
+                ResourceObjectDecodingError(
+                    subjectName: "type",
+                    cause: .jsonTypeMismatch(expectedType: "fourteenth_test_entities", foundType: nil),
+                    location: .type
+                ).description
             )
         }
     }
@@ -368,18 +372,23 @@ extension ResourceObjectDecodingErrorTests {
             TestEntity2.self,
             from: entity_type_is_missing
         )) { error in
+            
             XCTAssertEqual(
                 error as? ResourceObjectDecodingError,
                 ResourceObjectDecodingError(
-                    subjectName: "type",
-                    cause: .keyNotFound,
+                    subjectName: "self",
+                    cause: .jsonTypeMismatch(expectedType: "fourteenth_test_entities", foundType: nil),
                     location: .type
                 )
             )
-
+            
             XCTAssertEqual(
                 (error as? ResourceObjectDecodingError)?.description,
-                #"'type' (a.k.a. JSON:API type name) is required and missing."#
+                ResourceObjectDecodingError(
+                    subjectName: "type",
+                    cause: .jsonTypeMismatch(expectedType: "fourteenth_test_entities", foundType: nil),
+                    location: .type
+                ).description
             )
         }
     }
@@ -392,15 +401,19 @@ extension ResourceObjectDecodingErrorTests {
             XCTAssertEqual(
                 error as? ResourceObjectDecodingError,
                 ResourceObjectDecodingError(
-                    subjectName: "type",
-                    cause: .valueNotFound,
+                    subjectName: "self",
+                    cause: .jsonTypeMismatch(expectedType: "fourteenth_test_entities", foundType: nil),
                     location: .type
                 )
             )
-
+            
             XCTAssertEqual(
                 (error as? ResourceObjectDecodingError)?.description,
-                #"'type' (a.k.a. JSON:API type name) is not nullable but null was found."#
+                ResourceObjectDecodingError(
+                    subjectName: "type",
+                    cause: .jsonTypeMismatch(expectedType: "fourteenth_test_entities", foundType: nil),
+                    location: .type
+                ).description
             )
         }
     }
@@ -409,7 +422,7 @@ extension ResourceObjectDecodingErrorTests {
 // MARK: - Test Types
 extension ResourceObjectDecodingErrorTests {
     enum TestEntityType: ResourceObjectDescription {
-        public static var jsonType: String { return "thirteenth_test_entities" }
+        public static var jsonType: String? { return "thirteenth_test_entities" }
 
         typealias Attributes = NoAttributes
 
@@ -423,7 +436,7 @@ extension ResourceObjectDecodingErrorTests {
     typealias TestEntity = BasicEntity<TestEntityType>
 
     enum TestEntityType2: ResourceObjectDescription {
-        public static var jsonType: String { return "fourteenth_test_entities" }
+        public static var jsonType: String? { return "fourteenth_test_entities" }
 
         public struct Attributes: JSONAPI.Attributes {
 

@@ -847,7 +847,7 @@ extension ResourceObjectTests {
 extension ResourceObjectTests {
 
 	enum TestEntityType1: ResourceObjectDescription {
-		static var jsonType: String { return "test_entities"}
+		static var jsonType: String? { return "test_entities"}
 
 		typealias Attributes = NoAttributes
 		typealias Relationships = NoRelationships
@@ -856,7 +856,7 @@ extension ResourceObjectTests {
 	typealias TestEntity1 = BasicEntity<TestEntityType1>
 
 	enum TestEntityType2: ResourceObjectDescription {
-		static var jsonType: String { return "second_test_entities"}
+		static var jsonType: String? { return "second_test_entities"}
 
 		typealias Attributes = NoAttributes
 
@@ -868,7 +868,7 @@ extension ResourceObjectTests {
 	typealias TestEntity2 = BasicEntity<TestEntityType2>
 
 	enum TestEntityType3: ResourceObjectDescription {
-		static var jsonType: String { return "third_test_entities"}
+		static var jsonType: String? { return "third_test_entities"}
 
 		typealias Attributes = NoAttributes
 
@@ -880,7 +880,7 @@ extension ResourceObjectTests {
 	typealias TestEntity3 = BasicEntity<TestEntityType3>
 
 	enum TestEntityType4: ResourceObjectDescription {
-		static var jsonType: String { return "fourth_test_entities"}
+		static var jsonType: String? { return "fourth_test_entities"}
 
 		struct Relationships: JSONAPI.Relationships {
 			let other: ToOneRelationship<TestEntity2, NoMetadata, NoLinks>
@@ -902,7 +902,7 @@ extension ResourceObjectTests {
 	typealias TestEntity4WithMetaAndLinks = Entity<TestEntityType4, TestEntityMeta, TestEntityLinks>
 
 	enum TestEntityType5: ResourceObjectDescription {
-		static var jsonType: String { return "fifth_test_entities"}
+		static var jsonType: String? { return "fifth_test_entities"}
 
 		typealias Relationships = NoRelationships
 
@@ -914,7 +914,7 @@ extension ResourceObjectTests {
 	typealias TestEntity5 = BasicEntity<TestEntityType5>
 
 	enum TestEntityType6: ResourceObjectDescription {
-		static var jsonType: String { return "sixth_test_entities" }
+		static var jsonType: String? { return "sixth_test_entities" }
 
 		typealias Relationships = NoRelationships
 
@@ -928,7 +928,7 @@ extension ResourceObjectTests {
 	typealias TestEntity6 = BasicEntity<TestEntityType6>
 
 	enum TestEntityType7: ResourceObjectDescription {
-		static var jsonType: String { return "seventh_test_entities" }
+		static var jsonType: String? { return "seventh_test_entities" }
 
 		typealias Relationships = NoRelationships
 
@@ -941,7 +941,7 @@ extension ResourceObjectTests {
 	typealias TestEntity7 = BasicEntity<TestEntityType7>
 
 	enum TestEntityType8: ResourceObjectDescription {
-		static var jsonType: String { return "eighth_test_entities" }
+		static var jsonType: String? { return "eighth_test_entities" }
 
 		typealias Relationships = NoRelationships
 
@@ -959,7 +959,7 @@ extension ResourceObjectTests {
 	typealias TestEntity8 = BasicEntity<TestEntityType8>
 
 	enum TestEntityType9: ResourceObjectDescription {
-		public static var jsonType: String { return "ninth_test_entities" }
+		public static var jsonType: String? { return "ninth_test_entities" }
 
 		typealias Attributes = NoAttributes
 
@@ -982,7 +982,7 @@ extension ResourceObjectTests {
 	typealias TestEntity9 = BasicEntity<TestEntityType9>
 
 	enum TestEntityType10: ResourceObjectDescription {
-		public static var jsonType: String { return "tenth_test_entities" }
+		public static var jsonType: String? { return "tenth_test_entities" }
 
 		typealias Attributes = NoAttributes
 
@@ -995,7 +995,7 @@ extension ResourceObjectTests {
 	typealias TestEntity10 = BasicEntity<TestEntityType10>
 
 	enum TestEntityType11: ResourceObjectDescription {
-		public static var jsonType: String { return "eleventh_test_entities" }
+		public static var jsonType: String? { return "eleventh_test_entities" }
 
 		public struct Attributes: JSONAPI.Attributes {
 			let number: ValidatedAttribute<Int, IntOver10>
@@ -1007,7 +1007,7 @@ extension ResourceObjectTests {
 	typealias TestEntity11 = BasicEntity<TestEntityType11>
 
     enum TestEntityType12: ResourceObjectDescription {
-        public static var jsonType: String { return "eleventh_test_entities" }
+        public static var jsonType: String? { return "eleventh_test_entities" }
 
         public struct Attributes: JSONAPI.Attributes {
             let number: ValidatedAttribute<Int, IntOver10>
@@ -1020,7 +1020,7 @@ extension ResourceObjectTests {
 
     
 	enum TestEntityType15: ResourceObjectDescription {
-		public static var jsonType: String { return "fifth_test_entities" }
+		public static var jsonType: String? { return "fifth_test_entities" }
 
 		typealias Attributes = NoAttributes
 
@@ -1042,7 +1042,7 @@ extension ResourceObjectTests {
 	typealias TestEntity15 = BasicEntity<TestEntityType15>
 
 	enum UnidentifiedTestEntityType: ResourceObjectDescription {
-		public static var jsonType: String { return "unidentified_test_entities" }
+		public static var jsonType: String? { return "unidentified_test_entities" }
 
 		struct Attributes: JSONAPI.Attributes {
 			let me: Attribute<String>?
@@ -1060,7 +1060,7 @@ extension ResourceObjectTests {
 	typealias UnidentifiedTestEntityWithMetaAndLinks = NewEntity<UnidentifiedTestEntityType, TestEntityMeta, TestEntityLinks>
 
 	enum TestEntityWithMetaAttributeDescription: ResourceObjectDescription {
-		public static var jsonType: String { return "meta_attribute_entity" }
+		public static var jsonType: String? { return "meta_attribute_entity" }
 
 		struct Attributes: JSONAPI.Attributes {
 			var metaAttribute: (TestEntityWithMetaAttribute) -> Bool {
@@ -1076,7 +1076,7 @@ extension ResourceObjectTests {
 	typealias TestEntityWithMetaAttribute = BasicEntity<TestEntityWithMetaAttributeDescription>
 
 	enum TestEntityWithMetaRelationshipDescription: ResourceObjectDescription {
-		public static var jsonType: String { return "meta_relationship_entity" }
+		public static var jsonType: String? { return "meta_relationship_entity" }
 
 		typealias Attributes = NoAttributes
 

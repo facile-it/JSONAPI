@@ -108,7 +108,7 @@ final class DocumentCompareTests: XCTestCase {
 }
 
 fileprivate enum TestDescription: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "test_type"
+    static let jsonType: String? = "test_type"
 
     struct Attributes: JSONAPI.Attributes {
         let name: Attribute<String>
@@ -125,7 +125,7 @@ fileprivate enum TestDescription: JSONAPI.ResourceObjectDescription {
 fileprivate typealias TestType = ResourceObject<TestDescription, NoMetadata, NoLinks, String>
 
 fileprivate enum TestDescription2: JSONAPI.ResourceObjectDescription {
-    static let jsonType: String = "test_type2"
+    static let jsonType: String? = "test_type2"
 
     struct Attributes: JSONAPI.Attributes {
         let name: Attribute<String>
