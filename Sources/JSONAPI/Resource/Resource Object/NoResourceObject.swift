@@ -1,89 +1,42 @@
-//
-//  ResourceObject.swift
-//  JSONAPI
-//
-//  Created by Mathew Polzin on 7/24/18.
-//
-
-
-/// A JSON API structure within an ResourceObject that contains
-/// named properties of types `ToOneRelationship` and
-/// `ToManyRelationship`.
-public protocol Relationships: Codable & Equatable {}
-
-/// A JSON API structure within an ResourceObject that contains
-/// properties of any types that are JSON encodable.
-public protocol Attributes: Codable & Equatable {}
-
-/// CodingKeys must be `CodingKey` and `Equatable` in order
-/// to support Sparse Fieldsets.
-public typealias SparsableCodingKey = CodingKey & Equatable
-
-/// Attributes containing publicly accessible and `Equatable`
-/// CodingKeys are required to support Sparse Fieldsets.
-public protocol SparsableAttributes: Attributes {
-    associatedtype CodingKeys: SparsableCodingKey
-}
-
-/// Can be used as `Relationships` Type for Entities that do not
-/// have any Relationships.
-public struct NoRelationships: Relationships {
-    public static var none: NoRelationships { return .init() }
-}
-
-extension NoRelationships: CustomStringConvertible {
-    public var description: String { return "No Relationships" }
-}
-
-/// Can be used as `Attributes` Type for Entities that do not
-/// have any Attributes.
-public struct NoAttributes: Attributes {
-    public static var none: NoAttributes { return .init() }
-}
-
-extension NoAttributes: CustomStringConvertible {
-    public var description: String { return "No Attributes" }
-}
-
-/// Something that is JSONTyped provides a String representation
+/// Something that is OptionalJSONTyped provides an Optional<String> representation
 /// of its type.
-public protocol JSONTyped {
-    static var jsonType: String { get }
+public protocol OptionalJSONTyped {
+    static var jsonType: String? { get }
 }
 
-/// A `ResourceObjectProxyDescription` is an `ResourceObjectDescription`
-/// without Codable conformance.
-public protocol ResourceObjectProxyDescription: JSONTyped {
+public protocol NoResourceObjectProxyDescription: OptionalJSONTyped {
     associatedtype Attributes: Equatable
     associatedtype Relationships: Equatable
 }
 
-/// A `ResourceObjectDescription` describes a JSON API
-/// Resource Object. The Resource Object
+/// A `NoResourceObjectDescription` describes a JSON API
+/// NoResource Object. The NoResource Object
 /// itself is encoded and decoded as an
-/// `ResourceObject`, which gets specialized on an
-/// `ResourceObjectDescription`.
-public protocol ResourceObjectDescription: ResourceObjectProxyDescription where Attributes: JSONAPI.Attributes, Relationships: JSONAPI.Relationships {}
+/// `NoResourceObject`, which gets specialized on an
+/// `NoResourceObjectDescription`.
+public protocol NoResourceObjectDescription: NoResourceObjectProxyDescription where Attributes: JSONAPI.Attributes, Relationships: JSONAPI.Relationships {}
 
-/// ResourceObjectProxy is a protocol that can be used to create
-/// types that _act_ like ResourceObject but cannot be encoded
-/// or decoded as ResourceObjects.
+/// NoResourceObjectProxy is a protocol that can be used to create
+/// types that _act_ like NoResourceObject but cannot be encoded
+/// or decoded as NoResourceObjects.
 @dynamicMemberLookup
-public protocol ResourceObjectProxy: Equatable, JSONTyped {
-    associatedtype Description: ResourceObjectProxyDescription
+public protocol NoResourceObjectProxy: Equatable, OptionalJSONTyped {
+    associatedtype Description: NoResourceObjectProxyDescription
     associatedtype EntityRawIdType: JSONAPI.MaybeRawId
-    
-    typealias Id = JSONAPI.Id<EntityRawIdType, Self>
-    
-    typealias Attributes = Description.Attributes
-    typealias Relationships = Description.Relationships
     
     /// The `Entity`'s Id. This can be of type `Unidentified` if
     /// the entity is being created clientside and the
     /// server is being asked to create a unique Id. Otherwise,
-    /// this should be of a type conforming to `IdType`.
-    var id: Id { get }
+    /// this should be of a type conforming to `OptionalTypedId`.
+    typealias Id = JSONAPI.OptionalTypedId<EntityRawIdType>
     
+    /// The JSON API compliant attributes of this `Entity`.
+    typealias Attributes = Description.Attributes
+    
+    /// The JSON API compliant relationships of this `Entity`.
+    typealias Relationships = Description.Relationships
+    
+    var id: Id { get }
     /// The JSON API compliant attributes of this `Entity`.
     var attributes: Attributes { get }
     
@@ -91,18 +44,15 @@ public protocol ResourceObjectProxy: Equatable, JSONTyped {
     var relationships: Relationships { get }
 }
 
-extension ResourceObjectProxy {
-    /// The JSON API compliant "type" of this `ResourceObject`.
-    public static var jsonType: String { return Description.jsonType }
+extension NoResourceObjectProxy {
+    /// The JSON API compliant "type" of this `NoResourceObject`.
+    public static var jsonType: String? { return Description.jsonType }
 }
-
-/// A marker protocol.
-public protocol AbstractResourceObject {}
 
 /// ResourceObjectType is the protocol that ResourceObject conforms to. This
 /// protocol lets other types accept any ResourceObject as a generic
 /// specialization.
-public protocol ResourceObjectType: AbstractResourceObject, ResourceObjectProxy, CodablePrimaryResource where Description: ResourceObjectDescription {
+public protocol NoResourceObjectType: AbstractResourceObject, NoResourceObjectProxy, CodablePrimaryResource where Description: NoResourceObjectDescription {
     associatedtype Meta: JSONAPI.Meta
     associatedtype Links: JSONAPI.Links
     
@@ -113,37 +63,25 @@ public protocol ResourceObjectType: AbstractResourceObject, ResourceObjectProxy,
     var links: Links { get }
 }
 
+public protocol IdentifiableNoResourceObjectType: NoResourceObjectType, NoResourceRelatable where EntityRawIdType: JSONAPI.RawIdType {}
 
-public protocol IdentifiableResourceObjectType: ResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
+public struct NoResourceObject<Description: JSONAPI.NoResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>:
+NoResourceObjectType {
 
-/// An `ResourceObject` is a single model type that can be
-/// encoded to or decoded from a JSON API
-/// "Resource Object."
-/// See https://jsonapi.org/format/#document-resource-objects
-public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: ResourceObjectType {
-    
     public typealias Meta = MetaType
     public typealias Links = LinksType
     
-    /// The `ResourceObject`'s Id. This can be of type `Unidentified` if
-    /// the entity is being created clientside and the
-    /// server is being asked to create a unique Id. Otherwise,
-    /// this should be of a type conforming to `IdType`.
-    public let id: ResourceObject.Id
+    public var id: NoResourceObject.Id
     
-    /// The JSON API compliant attributes of this `ResourceObject`.
-    public let attributes: Description.Attributes
+    public var attributes: Description.Attributes
     
-    /// The JSON API compliant relationships of this `ResourceObject`.
-    public let relationships: Description.Relationships
+    public var relationships: Description.Relationships
     
-    /// Any additional metadata packaged with the entity.
-    public let meta: MetaType
+    public var meta: MetaType
     
-    /// Links related to the entity.
-    public let links: LinksType
+    public var links: LinksType
     
-    public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
+    public init(id: NoResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
         self.id = id
         self.attributes = attributes
         self.relationships = relationships
@@ -152,20 +90,19 @@ public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, Met
     }
 }
 
-extension ResourceObject: Identifiable, IdentifiableResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {
-    public typealias Identifier = ResourceObject.Id
+extension NoResourceObject: NoResourceIdentifiable, IdentifiableNoResourceObjectType, NoResourceRelatable where EntityRawIdType: JSONAPI.RawIdType {
+    public typealias Identifier = NoResourceObject.Id
 }
 
-extension ResourceObject: CustomStringConvertible {
+extension NoResourceObject: CustomStringConvertible {
     public var description: String {
-        return "ResourceObject<\(ResourceObject.jsonType)>(id: \(String(describing: id)), attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
+        "NoResourceObject<\(NoResourceObject.jsonType ?? "")>(id: \(String(describing: id)), attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
     }
 }
 
-// MARK: - Convenience initializers
-extension ResourceObject where EntityRawIdType: CreatableRawIdType {
+extension NoResourceObject where EntityRawIdType: CreatableRawIdType {
     public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-        self.id = ResourceObject.Id()
+        self.id = NoResourceObject.Id()
         self.attributes = attributes
         self.relationships = relationships
         self.meta = meta
@@ -173,7 +110,7 @@ extension ResourceObject where EntityRawIdType: CreatableRawIdType {
     }
 }
 
-extension ResourceObject where EntityRawIdType == Unidentified {
+extension NoResourceObject where EntityRawIdType == Unidentified {
     public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
         self.id = .unidentified
         self.attributes = attributes
@@ -183,55 +120,55 @@ extension ResourceObject where EntityRawIdType == Unidentified {
     }
 }
 
-// MARK: - Pointer for Relationships use
-public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
-    
-    /// A `ResourceObject.Pointer` is a `ToOneRelationship` with no metadata or links.
-    /// This is just a convenient way to reference a `ResourceObject` so that
-    /// other ResourceObjects' Relationships can be built up from it.
-    typealias Pointer = ToOneRelationship<ResourceObject, NoMetadata, NoLinks>
-    
-    /// `ResourceObject.Pointers` is a `ToManyRelationship` with no metadata or links.
-    /// This is just a convenient way to reference a bunch of ResourceObjects so
-    /// that other ResourceObjects' Relationships can be built up from them.
-    typealias Pointers = ToManyRelationship<ResourceObject, NoMetadata, NoLinks>
-    
-    /// Get a pointer to this resource object that can be used as a
-    /// relationship to another resource object.
-    var pointer: Pointer {
-        return Pointer(resourceObject: self)
-    }
-    
-    /// Get a pointer (i.e. `ToOneRelationship`) to this resource
-    /// object with the given metadata and links attached.
-    func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<ResourceObject, MType, LType> {
-        return ToOneRelationship(resourceObject: self, meta: meta, links: links)
-    }
-}
+//// MARK: - Pointer for Relationships use
+//public extension NoResourceObject where EntityRawIdType: JSONAPI.RawIdType {
+//    
+//    /// A `ResourceObject.Pointer` is a `ToOneRelationship` with no metadata or links.
+//    /// This is just a convenient way to reference a `ResourceObject` so that
+//    /// other ResourceObjects' Relationships can be built up from it.
+//    typealias Pointer = ToOneRelationship<NoResourceObject, NoMetadata, NoLinks>
+//    
+//    /// `ResourceObject.Pointers` is a `ToManyRelationship` with no metadata or links.
+//    /// This is just a convenient way to reference a bunch of ResourceObjects so
+//    /// that other ResourceObjects' Relationships can be built up from them.
+//    typealias Pointers = ToManyRelationship<NoResourceObject, NoMetadata, NoLinks>
+//    
+//    /// Get a pointer to this resource object that can be used as a
+//    /// relationship to another resource object.
+//    var pointer: Pointer {
+//        return Pointer(resourceObject: self)
+//    }
+//    
+//    /// Get a pointer (i.e. `ToOneRelationship`) to this resource
+//    /// object with the given metadata and links attached.
+//    func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<NoResourceObject, MType, LType> {
+//        return ToOneRelationship(resourceObject: self, meta: meta, links: links)
+//    }
+//}
 
 // MARK: - Identifying Unidentified Entities
-public extension ResourceObject where EntityRawIdType == Unidentified {
+public extension NoResourceObject where EntityRawIdType == Unidentified {
     /// Create a new `ResourceObject` from this one with a newly created
     /// unique Id of the given type.
-    func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
+    func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> NoResourceObject<Description, MetaType, LinksType, RawIdType> {
         return .init(attributes: attributes, relationships: relationships, meta: meta, links: links)
     }
     
     /// Create a new `ResourceObject` from this one with the given Id.
-    func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
-        return .init(id: ResourceObject<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
+    func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> NoResourceObject<Description, MetaType, LinksType, RawIdType> {
+        return .init(id: NoResourceObject<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
     }
 }
 
-public extension ResourceObject where EntityRawIdType: CreatableRawIdType {
-    /// Create a copy of this `ResourceObject` with a new unique Id.
-    func withNewIdentifier() -> ResourceObject {
-        return ResourceObject(attributes: attributes, relationships: relationships, meta: meta, links: links)
+public extension NoResourceObject where EntityRawIdType: CreatableRawIdType {
+    /// Create a copy of this `NoResourceObject` with a new unique Id.
+    func withNewIdentifier() -> NoResourceObject {
+        return NoResourceObject(attributes: attributes, relationships: relationships, meta: meta, links: links)
     }
 }
 
 // MARK: - Attribute Access
-public extension ResourceObjectProxy {
+public extension NoResourceObjectProxy {
     // MARK: Keypath Subscript Lookup
     /// Access the attribute at the given keypath. This just
     /// allows you to write `resourceObject[\.propertyName]` instead
@@ -296,7 +233,7 @@ public extension ResourceObjectProxy {
 }
 
 // MARK: - Meta-Attribute Access
-public extension ResourceObjectProxy {
+public extension NoResourceObjectProxy {
     // MARK: Keypath Subscript Lookup
     /// Access an attribute requiring a transformation on the RawValue _and_
     /// a secondary transformation on this entity (self).
@@ -314,7 +251,7 @@ public extension ResourceObjectProxy {
 }
 
 // MARK: - Relationship Access
-public extension ResourceObjectProxy {
+public extension NoResourceObjectProxy {
     /// Access to an Id of a `ToOneRelationship`.
     /// This allows you to write `resourceObject ~> \.other` instead
     /// of `resourceObject.relationships.other.id`.
@@ -356,7 +293,7 @@ public extension ResourceObjectProxy {
 }
 
 // MARK: - Meta-Relationship Access
-public extension ResourceObjectProxy {
+public extension NoResourceObjectProxy {
     /// Access to an Id of a `ToOneRelationship`.
     /// This allows you to write `resourceObject ~> \.other` instead
     /// of `resourceObject.relationships.other.id`.
@@ -372,10 +309,8 @@ public extension ResourceObjectProxy {
     }
 }
 
-infix operator ~>
-
 // MARK: - Codable
-private enum ResourceObjectCodingKeys: String, CodingKey {
+private enum NoResourceObjectCodingKeys: String, CodingKey {
     case type = "type"
     case id = "id"
     case attributes = "attributes"
@@ -384,11 +319,11 @@ private enum ResourceObjectCodingKeys: String, CodingKey {
     case links = "links"
 }
 
-public extension ResourceObject {
+public extension NoResourceObject {
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: ResourceObjectCodingKeys.self)
+        var container = encoder.container(keyedBy: NoResourceObjectCodingKeys.self)
         
-        try container.encode(ResourceObject.jsonType, forKey: .type)
+        try container.encode(NoResourceObject.jsonType, forKey: .type)
         
         if EntityRawIdType.self != Unidentified.self {
             try container.encode(id, forKey: .id)
@@ -413,7 +348,7 @@ public extension ResourceObject {
     }
     
     init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
+        let container = try decoder.container(keyedBy: NoResourceObjectCodingKeys.self)
         
         let type: String
         do {
@@ -423,15 +358,15 @@ public extension ResourceObject {
                 ?? error
         }
         
-        guard ResourceObject.jsonType == type else {
+        guard NoResourceObject.jsonType == type else {
             throw ResourceObjectDecodingError(
-                expectedJSONAPIType: ResourceObject.jsonType,
+                expectedJSONAPIType: NoResourceObject.jsonType ?? "",
                 found: type
             )
         }
         
         let maybeUnidentified = Unidentified() as? EntityRawIdType
-        id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
+        id = try maybeUnidentified.map { NoResourceObject.Id(rawValue: $0) } ?? container.decode(NoResourceObject.Id.self, forKey: .id)
         
         do {
             attributes = try (NoAttributes() as? Description.Attributes)
