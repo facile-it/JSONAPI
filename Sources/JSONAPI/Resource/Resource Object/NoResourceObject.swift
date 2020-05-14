@@ -67,7 +67,7 @@ public protocol IdentifiableNoResourceObjectType: NoResourceObjectType, NoResour
 
 public struct NoResourceObject<Description: JSONAPI.NoResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>:
 NoResourceObjectType {
-
+    
     public typealias Meta = MetaType
     public typealias Links = LinksType
     
@@ -120,31 +120,31 @@ extension NoResourceObject where EntityRawIdType == Unidentified {
     }
 }
 
-//// MARK: - Pointer for Relationships use
-//public extension NoResourceObject where EntityRawIdType: JSONAPI.RawIdType {
-//    
-//    /// A `ResourceObject.Pointer` is a `ToOneRelationship` with no metadata or links.
-//    /// This is just a convenient way to reference a `ResourceObject` so that
-//    /// other ResourceObjects' Relationships can be built up from it.
-//    typealias Pointer = ToOneRelationship<NoResourceObject, NoMetadata, NoLinks>
-//    
-//    /// `ResourceObject.Pointers` is a `ToManyRelationship` with no metadata or links.
-//    /// This is just a convenient way to reference a bunch of ResourceObjects so
-//    /// that other ResourceObjects' Relationships can be built up from them.
-//    typealias Pointers = ToManyRelationship<NoResourceObject, NoMetadata, NoLinks>
-//    
-//    /// Get a pointer to this resource object that can be used as a
-//    /// relationship to another resource object.
-//    var pointer: Pointer {
-//        return Pointer(resourceObject: self)
-//    }
-//    
-//    /// Get a pointer (i.e. `ToOneRelationship`) to this resource
-//    /// object with the given metadata and links attached.
-//    func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<NoResourceObject, MType, LType> {
-//        return ToOneRelationship(resourceObject: self, meta: meta, links: links)
-//    }
-//}
+// MARK: - Pointer for Relationships use
+public extension NoResourceObject where EntityRawIdType: JSONAPI.RawIdType {
+    
+    /// A `ResourceObject.Pointer` is a `ToOneRelationship` with no metadata or links.
+    /// This is just a convenient way to reference a `ResourceObject` so that
+    /// other ResourceObjects' Relationships can be built up from it.
+    typealias Pointer = ToOneRelationshipNoResource<NoResourceObject, NoMetadata, NoLinks>
+    
+    /// `ResourceObject.Pointers` is a `ToManyRelationship` with no metadata or links.
+    /// This is just a convenient way to reference a bunch of ResourceObjects so
+    /// that other ResourceObjects' Relationships can be built up from them.
+    typealias Pointers = ToManyRelationshipNoResource<NoResourceObject, NoMetadata, NoLinks>
+    
+    /// Get a pointer to this resource object that can be used as a
+    /// relationship to another resource object.
+    var pointer: Pointer {
+        return Pointer(resourceObject: self)
+    }
+    
+    /// Get a pointer (i.e. `ToOneRelationship`) to this resource
+    /// object with the given metadata and links attached.
+    func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationshipNoResource<NoResourceObject, MType, LType> {
+        return ToOneRelationshipNoResource(resourceObject: self, meta: meta, links: links)
+    }
+}
 
 // MARK: - Identifying Unidentified Entities
 public extension NoResourceObject where EntityRawIdType == Unidentified {
@@ -309,6 +309,8 @@ public extension NoResourceObjectProxy {
     }
 }
 
+infix operator ~>
+
 // MARK: - Codable
 private enum NoResourceObjectCodingKeys: String, CodingKey {
     case type = "type"
@@ -350,18 +352,12 @@ public extension NoResourceObject {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: NoResourceObjectCodingKeys.self)
         
-        let type: String
-        do {
-            type = try container.decode(String.self, forKey: .type)
-        } catch let error as DecodingError {
-            throw ResourceObjectDecodingError(error)
-                ?? error
-        }
-        
+        let type: String? = try? container.decode(Optional<String>.self, forKey: .type)
+       
         guard NoResourceObject.jsonType == type else {
             throw ResourceObjectDecodingError(
-                expectedJSONAPIType: NoResourceObject.jsonType ?? "",
-                found: type
+                expectedJSONAPIType: NoResourceObject.jsonType ?? "unexpected",
+                found: type ?? "unexpected"
             )
         }
         

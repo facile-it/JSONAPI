@@ -72,7 +72,7 @@ public struct ToManyRelationshipNoResource<NoResourceRelatable: JSONAPI.NoResour
         self.links = links
     }
     
-    public init<T: JSONAPI.NoResourceRelatable>(pointers: [ToOneRelationshipNoResource<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.Identifier == NoResourceRelatable.Identifier {
+    public init<T: JSONAPI.NoResourceIdentifiable>(pointers: [ToOneRelationshipNoResource<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.Identifier == NoResourceRelatable.Identifier {
         ids = pointers.map { $0.id }
         self.meta = meta
         self.links = links
@@ -97,10 +97,9 @@ extension ToManyRelationshipNoResource where MetaType == NoMetadata, LinksType =
         self.init(ids: ids, meta: .none, links: .none)
     }
     
-//
-//    public init<T: JSONAPI.NoResourceIdentifiable>(pointers: [ToOneRelationshipNoResource<T, NoMetadata, NoLinks>]) where T.Identifier == NoResourceRelatable.Identifier {
-//        self.init(pointers: pointers, meta: .none, links: .none)
-//    }
+    public init<T: JSONAPI.NoResourceIdentifiable>(pointers: [ToOneRelationshipNoResource<T, NoMetadata, NoLinks>]) where T.Identifier == NoResourceRelatable.Identifier {
+        self.init(pointers: pointers, meta: .none, links: .none)
+    }
     
     public static var none: ToManyRelationshipNoResource {
         return .none(withMeta: .none, links: .none)
