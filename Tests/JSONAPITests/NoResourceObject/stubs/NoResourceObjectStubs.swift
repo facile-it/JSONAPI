@@ -1,12 +1,10 @@
 let entity_no_resource_no_relationships_no_attributes = """
 {
-    "id": "A24B3B69-4DF1-467F-B52E-B0C9E44F436A"
 }
 """.data(using: .utf8)!
 
 let entity_no_resource_no_relationships_some_attributes = """
 {
-"id": "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF",
 "attributes": {
 "floater": 123.321
 }
@@ -15,7 +13,6 @@ let entity_no_resource_no_relationships_some_attributes = """
 
 let entity_no_resource_some_relationships_no_attributes = """
 {
-"id": "11113B69-4DF1-467F-B52E-B0C9E44FC444",
 "relationships": {
 "others": {
 "data": [{
@@ -29,7 +26,6 @@ let entity_no_resource_some_relationships_no_attributes = """
 
 let entity_no_resource_some_relationships_some_attributes = """
 {
-"id": "90F03B69-4DF1-467F-B52E-B0C9E44FC333",
 "attributes": {
 "word": "coolio",
 "number": 992299,
@@ -48,7 +44,6 @@ let entity_no_resource_some_relationships_some_attributes = """
 
 let entity_no_resource_some_relationships_some_attributes_with_meta = """
 {
-    "id": "90F03B69-4DF1-467F-B52E-B0C9E44FC333",
     "attributes": {
         "word": "coolio",
         "number": 992299,
@@ -74,7 +69,6 @@ let entity_no_resource_some_relationships_some_attributes_with_meta = """
 
 let entity_no_resource_some_relationships_some_attributes_with_links = """
 {
-    "id": "90F03B69-4DF1-467F-B52E-B0C9E44FC333",
     "attributes": {
         "word": "coolio",
         "number": 992299,
@@ -96,7 +90,6 @@ let entity_no_resource_some_relationships_some_attributes_with_links = """
 
 let entity_no_resource_some_relationships_some_attributes_with_meta_and_links = """
 {
-    "id": "90F03B69-4DF1-467F-B52E-B0C9E44FC333",
     "attributes": {
         "word": "coolio",
         "number": 992299,
@@ -122,7 +115,6 @@ let entity_no_resource_some_relationships_some_attributes_with_meta_and_links = 
 
 let entity_no_resource_one_omitted_attribute = """
 {
-    "id": "1",
     "attributes": {
         "here": "Hello",
         "maybeNull": "World"
@@ -132,7 +124,6 @@ let entity_no_resource_one_omitted_attribute = """
 
 let entity_no_resource_one_null_attribute = """
 {
-    "id": "1",
     "attributes": {
         "here": "Hello",
         "maybeHere": "World",
@@ -143,7 +134,6 @@ let entity_no_resource_one_null_attribute = """
 
 let entity_no_resource_all_attributes = """
 {
-    "id": "1",
     "attributes": {
         "here": "Hello",
         "maybeHere": "World",
@@ -154,7 +144,6 @@ let entity_no_resource_all_attributes = """
 
 let entity_no_resource_one_null_and_one_missing_attribute = """
 {
-    "id": "1",
     "attributes": {
         "here": "Hello",
         "maybeNull": null
@@ -164,7 +153,6 @@ let entity_no_resource_one_null_and_one_missing_attribute = """
 
 let entity_no_resource_broken_missing_nullable_attribute = """
 {
-    "id": "1",
     "attributes": {
         "here": "Hello",
         "maybeHere": "World"
@@ -174,7 +162,6 @@ let entity_no_resource_broken_missing_nullable_attribute = """
 
 let entity_no_resource_null_optional_nullable_attribute = """
 {
-    "id": "1",
     "attributes": {
         "here": "Hello",
         "maybeHereMaybeNull": null
@@ -184,7 +171,6 @@ let entity_no_resource_null_optional_nullable_attribute = """
 
 let entity_no_resource_non_null_optional_nullable_attribute = """
 {
-    "id": "1",
     "attributes": {
         "here": "Hello",
         "maybeHereMaybeNull": "World"
@@ -194,7 +180,6 @@ let entity_no_resource_non_null_optional_nullable_attribute = """
 
 let entity_no_resource_int_to_string_attribute = """
 {
-    "id": "1",
     "attributes": {
         "string": "22",
         "int": 22,
@@ -208,7 +193,6 @@ let entity_no_resource_int_to_string_attribute = """
 
 let entity_no_resource_optional_not_omitted_relationship = """
 {
-    "id": "1",
     "relationships": {
         "nullableOne": {
             "data": {
@@ -234,7 +218,6 @@ let entity_no_resource_optional_not_omitted_relationship = """
 
 let entity_no_resource_optional_nullable_nulled_relationship = """
 {
-    "id": "1",
     "relationships": {
         "nullableOne": {
             "data": {
@@ -257,7 +240,6 @@ let entity_no_resource_optional_nullable_nulled_relationship = """
 
 let entity_no_resource_omitted_relationship = """
 {
-    "id": "1",
     "relationships": {
         "nullableOne": {
             "data": {
@@ -277,7 +259,6 @@ let entity_no_resource_omitted_relationship = """
 
 let entity_no_resource_optional_to_many_relationship_not_omitted = """
 {
-    "id": "1",
     "relationships": {
         "nullableOne": {
             "data": {
@@ -305,7 +286,6 @@ let entity_no_resource_optional_to_many_relationship_not_omitted = """
 
 let entity_no_resource_nulled_relationship = """
 {
-    "id": "1",
     "relationships": {
         "nullableOne": {
             "data": null
@@ -322,7 +302,6 @@ let entity_no_resource_nulled_relationship = """
 
 let entity_no_resource_self_ref_relationship = """
 {
-    "id": "1",
     "relationships": {
         "selfRefs": { "data": [] },
         "selfRef": {
@@ -337,7 +316,6 @@ let entity_no_resource_self_ref_relationship = """
 
 let entity_no_resource_invalid_validated_attribute = """
 {
-    "id": "1",
     "attributes": {
         "number": 10
     }
@@ -346,7 +324,6 @@ let entity_no_resource_invalid_validated_attribute = """
 
 let entity_no_resource_valid_validated_attribute = """
 {
-    "id": "1",
     "attributes": {
         "number": 60
     }
@@ -355,7 +332,6 @@ let entity_no_resource_valid_validated_attribute = """
 
 let entity_no_resource_all_relationships_optional_and_omitted = """
 {
-    "id": "1",
     "attributes": {
         "number": 10
     }
@@ -364,7 +340,6 @@ let entity_no_resource_all_relationships_optional_and_omitted = """
 
 let entity_no_resource_nonNullable_relationship_is_null = """
 {
-    "id": "1",
     "relationships": {
         "required": null
     }
@@ -373,7 +348,6 @@ let entity_no_resource_nonNullable_relationship_is_null = """
 
 let entity_no_resource_nonNullable_relationship_is_null2 = """
 {
-    "id": "1",
     "relationships": {
         "required": {
             "data": null
@@ -384,7 +358,6 @@ let entity_no_resource_nonNullable_relationship_is_null2 = """
 
 let entit_no_resourcey_required_relationship_is_omitted = """
 {
-    "id": "1",
     "relationships": {
     }
 }
@@ -392,7 +365,6 @@ let entit_no_resourcey_required_relationship_is_omitted = """
 
 let entity_no_resource_relationship_is_wrong_type = """
 {
-    "id": "1",
     "relationships": {
         "required": {
             "data": {
@@ -406,7 +378,6 @@ let entity_no_resource_relationship_is_wrong_type = """
 
 let entity_no_resource_single_relationship_is_many = """
 {
-    "id": "1",
     "relationships": {
         "required": {
             "data": [{
@@ -420,7 +391,6 @@ let entity_no_resource_single_relationship_is_many = """
 
 let entity_no_resource_many_relationship_is_single = """
 {
-    "id": "1",
     "relationships": {
         "required": {
             "data": {
@@ -440,13 +410,11 @@ let entity_no_resource_many_relationship_is_single = """
 
 let entity_no_resource_relationships_entirely_missing = """
 {
-    "id": "1",
 }
 """.data(using: .utf8)!
 
 let entity_no_resource_required_attribute_is_omitted = """
 {
-    "id": "1",
     "attributes": {
     }
 }
@@ -454,7 +422,6 @@ let entity_no_resource_required_attribute_is_omitted = """
 
 let entity_no_resource_nonNullable_attribute_is_null = """
 {
-    "id": "1",
     "attributes": {
         "required": null
     }
@@ -463,7 +430,6 @@ let entity_no_resource_nonNullable_attribute_is_null = """
 
 let entity_no_resource_attribute_is_wrong_type = """
 {
-    "id": "1",
     "attributes": {
         "required": 10
     }
@@ -472,7 +438,6 @@ let entity_no_resource_attribute_is_wrong_type = """
 
 let entity_no_resource_attribute_is_wrong_type2 = """
 {
-    "id": "1",
     "attributes": {
         "required": "hello",
         "other": "world"
@@ -482,7 +447,6 @@ let entity_no_resource_attribute_is_wrong_type2 = """
 
 let entity_no_resource_attribute_is_wrong_type3 = """
 {
-    "id": "1",
     "attributes": {
         "required": "hello",
         "yetAnother": 101
@@ -492,7 +456,6 @@ let entity_no_resource_attribute_is_wrong_type3 = """
 
 let entity_no_resource_attribute_is_wrong_type4 = """
 {
-    "id": "1",
     "attributes": {
         "required": "hello",
         "transformed": "world"
@@ -502,7 +465,6 @@ let entity_no_resource_attribute_is_wrong_type4 = """
 
 let entity_no_resource_attribute_always_fails = """
 {
-    "id": "1",
     "attributes": {
         "required": "hello",
         "transformed2": "world"
@@ -512,13 +474,11 @@ let entity_no_resource_attribute_always_fails = """
 
 let entity_no_resource_attributes_entirely_missing = """
 {
-    "id": "1",
 }
 """.data(using: .utf8)!
 
 let entity_no_resource_is_wrong_type = """
 {
-    "id": "1",
     "attributes": {
         "required": "hello",
         "yetAnother": 101
@@ -528,7 +488,6 @@ let entity_no_resource_is_wrong_type = """
 
 let entity_no_resource_type_is_wrong_type = """
 {
-    "id": "1",
     "attributes": {
         "required": "hello"
     }
@@ -537,7 +496,6 @@ let entity_no_resource_type_is_wrong_type = """
 
 let entity_no_resource_type_is_missing = """
 {
-    "id": "1",
     "attributes": {
         "required": "hello"
     }
@@ -546,7 +504,6 @@ let entity_no_resource_type_is_missing = """
 
 let entity_no_resource_type_is_null = """
 {
-    "id": "1",
     "type": null,
     "attributes": {
         "required": "hello"

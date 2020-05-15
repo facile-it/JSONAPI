@@ -6,21 +6,21 @@ class NoResourceObjectTests: XCTestCase {
     
     func test_relationship_access() {
         
-        let resourceObjectEntity1 = JSONTyped.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let resourceObjectEntity1 = ResourceObject.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
         let entity2 = TestEntity2(attributes: .none, relationships: .init(other: resourceObjectEntity1.pointer), meta: .none, links: .none)
         
         XCTAssertEqual(entity2.relationships.other, resourceObjectEntity1.pointer)
     }
     
     func test_relationship_operator_access() {
-        let resourceObjectEntity1 = JSONTyped.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let resourceObjectEntity1 = ResourceObject.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
         let entity2 = TestEntity2(attributes: .none, relationships: .init(other: resourceObjectEntity1.pointer), meta: .none, links: .none)
         
         XCTAssertEqual(entity2 ~> \.other, resourceObjectEntity1.id)
     }
     
     func test_optional_relationship_operator_access() {
-        let resourceObjectEntity1 = JSONTyped.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let resourceObjectEntity1 = ResourceObject.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 
         let entity = TestEntity9(
             attributes: .none,
@@ -48,9 +48,9 @@ class NoResourceObjectTests: XCTestCase {
     
     func test_toMany_relationship_operator_access() {
         
-        let resourceObjectEntity1 = JSONTyped.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-        let resourceObjectEntity2 = JSONTyped.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-        let resourceObjectEntity4 = JSONTyped.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let resourceObjectEntity1 = ResourceObject.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let resourceObjectEntity2 = ResourceObject.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let resourceObjectEntity4 = ResourceObject.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
         let entity3 = TestEntity3(attributes: .none, relationships: .init(others: .init(pointers: [resourceObjectEntity1.pointer, resourceObjectEntity2.pointer, resourceObjectEntity4.pointer])), meta: .none, links: .none)
         
         XCTAssertEqual(entity3 ~> \.others, [resourceObjectEntity1.id, resourceObjectEntity2.id, resourceObjectEntity4.id])
@@ -65,7 +65,7 @@ class NoResourceObjectTests: XCTestCase {
     
     func test_relationshipIds() {
         
-        let resourceObjectEntity1 = JSONTyped.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let resourceObjectEntity1 = ResourceObject.TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
         let entity2 = TestEntity2(attributes: .none, relationships: .init(other: resourceObjectEntity1.pointer), meta: .none, links: .none)
         
         XCTAssertEqual(entity2.relationships.other.id, resourceObjectEntity1.id)
@@ -97,15 +97,15 @@ class NoResourceObjectTests: XCTestCase {
     
     func test_initialization() {
         
-        let entity1 = TestEntity1(id: .init(rawValue: "wow"), attributes: .none, relationships: .none, meta: .none, links: .none)
+        let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
         
-        let resourceObjectEntity1 = JSONTyped.TestEntity1(
+        let resourceObjectEntity1 = ResourceObject.TestEntity1(
             attributes: .none,
             relationships: .none,
             meta: .none,
             links: .none)
         
-        let resourceObjectEntity2 = JSONTyped.TestEntity2(
+        let resourceObjectEntity2 = ResourceObject.TestEntity2(
             id: .init(rawValue: "cool"),
             attributes: .none,
             relationships: .init(
@@ -114,7 +114,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity2(
-            id: .init(rawValue: "cool"),
             attributes: .none,
             relationships: .init(
                 other: .init(
@@ -123,7 +122,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity2(
-            id: .init(rawValue: "cool"),
             attributes: .none,
             relationships: .init(
                 other: .init(
@@ -132,7 +130,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity3(
-            id: .init(rawValue: "3"),
             attributes: .none,
             relationships: .init(
                 others: .init(
@@ -141,14 +138,12 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity3(
-            id: .init(rawValue: "3"),
             attributes: .none,
             relationships: .init(others: .none),
             meta: .none,
             links: .none)
         
         let _ = TestEntity4(
-            id: .init(rawValue: "4"),
             attributes: .init(
                 word: .init(value: "hello"),
                 number: .init(value: 10),
@@ -158,14 +153,12 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity5(
-            id: .init(rawValue: "5"),
             attributes: .init(floater: .init(value: 10.2)),
             relationships: .none,
             meta: .none,
             links: .none)
         
         let _ = TestEntity6(
-            id: .init(rawValue: "6"),
             attributes: .init(
                 here: .init(value: "here"),
                 maybeHere: nil,
@@ -175,7 +168,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity7(
-            id: .init(rawValue: "7"),
             attributes: .init(
                 here: .init(value: "hello"),
                 maybeHereMaybeNull: .init(value: "world")),
@@ -184,7 +176,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         XCTAssertNoThrow(try TestEntity8(
-            id: .init(rawValue: "8"),
             attributes: .init(
                 string: .init(value: "hello"),
                 int: .init(value: 10),
@@ -198,7 +189,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none))
         
         let _ = TestEntity9(
-            id: .init(rawValue: "9"),
             attributes: .none,
             relationships: .init(
                 one: resourceObjectEntity1.pointer,
@@ -210,7 +200,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity9(
-            id: .init(rawValue: "9"),
             attributes: .none,
             relationships: .init(
                 one: resourceObjectEntity1.pointer,
@@ -222,7 +211,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity9(
-            id: .init(rawValue: "9"),
             attributes: .none,
             relationships: .init(
                 one: resourceObjectEntity1.pointer,
@@ -234,7 +222,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity9(
-            id: .init(rawValue: "9"),
             attributes: .none,
             relationships: .init(
                 one: resourceObjectEntity1.pointer,
@@ -246,7 +233,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity9(
-            id: .init(rawValue: "9"),
             attributes: .none,
             relationships: .init(
                 one: resourceObjectEntity1.pointer,
@@ -261,7 +247,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         let _ = TestEntity9(
-            id: .init(rawValue: "9"),
             attributes: .none,
             relationships: .init(
                 one: resourceObjectEntity1.pointer,
@@ -278,11 +263,11 @@ class NoResourceObjectTests: XCTestCase {
             meta: .none,
             links: .none)
         
-        let e10id1 = JSONTyped.TestEntity10.Identifier(rawValue: "hello")
-        let e10id2 = JSONTyped.TestEntity10.Id(rawValue: "world")
-        let e10id3 = JSONTyped.TestEntity10.Id(rawValue: "!")
+        let e10id1 = ResourceObject.TestEntity10.Identifier(rawValue: "hello")
+        let e10id2 = ResourceObject.TestEntity10.Id(rawValue: "world")
+        let e10id3 = ResourceObject.TestEntity10.Id(rawValue: "!")
+        
         let _ = TestEntity10(
-            id: .init(rawValue: "10"),
             attributes: .none,
             relationships: .init(
                 selfRef: .init(id: e10id1),
@@ -291,7 +276,6 @@ class NoResourceObjectTests: XCTestCase {
             links: .none)
         
         XCTAssertNoThrow(try TestEntity11(
-            id: .init(rawValue: "11"),
             attributes: .init(number: .init(rawValue: 11)),
             relationships: .none,
             meta: .none,
@@ -324,16 +308,9 @@ extension NoResourceObjectTests {
         
         XCTAssertEqual(unidentifiedEntity.attributes, identifiedCopy.attributes)
         XCTAssertEqual(unidentifiedEntity.relationships, identifiedCopy.relationships)
-        XCTAssertEqual(identifiedCopy.id, OptionalTypedId(rawValue: "hello"))
+        XCTAssertEqual(identifiedCopy.id, NoResourceId.unidentified)
     }
     
-    func test_copyWithNewId() {
-        let identifiedEntity = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-        
-        let identifiedCopy = identifiedEntity.withNewIdentifier()
-        
-        XCTAssertNotEqual(identifiedEntity.id, identifiedCopy.id)
-    }
 }
 
 // MARK: - Encode/Decode
@@ -980,59 +957,51 @@ extension NoResourceObjectTests {
 // MARK: With a Meta Attribute
 extension NoResourceObjectTests {
     func test_MetaEntityAttributeAccessWorks() {
-        let entity1 = TestEntityWithMetaAttribute(id: .init(rawValue:"even"),
-                                                  attributes: .init(),
+        let entity1 = TestEntityWithMetaAttribute(attributes: .init(),
                                                   relationships: .none,
                                                   meta: .none,
                                                   links: .none)
-        let entity2 = TestEntityWithMetaAttribute(id: .init(rawValue:"odd"),
-                                                  attributes: .init(),
+        let entity2 = TestEntityWithMetaAttribute(attributes: .init(),
                                                   relationships: .none,
                                                   meta: .none,
                                                   links: .none)
 
         XCTAssertEqual(entity1.metaAttribute, true)
-        XCTAssertEqual(entity2.metaAttribute, false)
     }
 
     @available(*, deprecated, message: "remove next major version")
     func test_MetaEntityAttributeAccessWorks_deprecated() {
-        let entity1 = TestEntityWithMetaAttribute(id: .init(rawValue:"even"),
-                                                  attributes: .init(),
+        let entity1 = TestEntityWithMetaAttribute(attributes: .init(),
                                                   relationships: .none,
                                                   meta: .none,
                                                   links: .none)
-        let entity2 = TestEntityWithMetaAttribute(id: .init(rawValue:"odd"),
-                                                  attributes: .init(),
+        let entity2 = TestEntityWithMetaAttribute(attributes: .init(),
                                                   relationships: .none,
                                                   meta: .none,
                                                   links: .none)
 
         XCTAssertEqual(entity1[\.metaAttribute], true)
-        XCTAssertEqual(entity2[\.metaAttribute], false)
     }
 }
 
 // MARK: With a Meta Relationship
 extension NoResourceObjectTests {
     func test_MetaEntityRelationshipAccessWorks() {
-        let entity1 = TestEntityWithMetaRelationship(id: .init(rawValue: "even"),
-                                                  attributes: .none,
+        let entity1 = TestEntityWithMetaRelationship(attributes: .none,
                                                   relationships: .init(),
                                                   meta: .none,
                                                   links: .none)
 
-        XCTAssertEqual(entity1 ~> \.metaRelationship, NoResourceObjectTests.TestEntity1.NoResourceIdentifier.init(rawValue: "hello"))
+        XCTAssertEqual(entity1 ~> \.metaRelationship, NoResourceObjectTests.TestEntity1.NoResourceIdentifier.unidentified)
     }
 
     func test_toManyMetaRelationshipAccessWorks() {
-        let entity1 = TestEntityWithMetaRelationship(id: .init(rawValue: "even"),
-                                                     attributes: .none,
+        let entity1 = TestEntityWithMetaRelationship(attributes: .none,
                                                      relationships: .init(),
                                                      meta: .none,
                                                      links: .none)
 
-        XCTAssertEqual(entity1 ~> \.toManyMetaRelationship, [NoResourceObjectTests.TestEntity1.NoResourceIdentifier.init(rawValue: "hello")])
+        XCTAssertEqual(entity1 ~> \.toManyMetaRelationship, [NoResourceObjectTests.TestEntity1.NoResourceIdentifier.unidentified])
     }
 }
 
@@ -1041,6 +1010,7 @@ extension NoResourceObjectTests {
     
     //Type1
     enum TestEntityType1: NoResourceObjectDescription {
+        
         static var jsonType: String? { return nil }
         
         typealias Attributes = NoAttributes
@@ -1057,7 +1027,7 @@ extension NoResourceObjectTests {
         typealias Attributes = NoAttributes
         
         struct Relationships: JSONAPI.Relationships {
-            let other: ToOneRelationship<JSONTyped.TestEntity1, NoMetadata, NoLinks>
+            let other: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>
         }
     }
     
@@ -1070,7 +1040,7 @@ extension NoResourceObjectTests {
         typealias Attributes = NoAttributes
         
         struct Relationships: JSONAPI.Relationships {
-            let others: ToManyRelationship<JSONTyped.TestEntity1, NoMetadata, NoLinks>
+            let others: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>
         }
     }
     
@@ -1082,7 +1052,7 @@ extension NoResourceObjectTests {
         static var jsonType: String? { return nil }
         
         struct Relationships: JSONAPI.Relationships {
-            let other: ToOneRelationship<JSONTyped.TestEntity2, NoMetadata, NoLinks>
+            let other: ToOneRelationship<ResourceObject.TestEntity2, NoMetadata, NoLinks>
         }
         
         struct Attributes: JSONAPI.Attributes {
@@ -1168,15 +1138,15 @@ extension NoResourceObjectTests {
         typealias Attributes = NoAttributes
         
         public struct Relationships: JSONAPI.Relationships {
-            let one: ToOneRelationship<JSONTyped.TestEntity1, NoMetadata, NoLinks>
+            let one: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>
             
-            let nullableOne: ToOneRelationship<JSONTyped.TestEntity1?, NoMetadata, NoLinks>
+            let nullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoLinks>
             
-            let optionalOne: ToOneRelationship<JSONTyped.TestEntity1, NoMetadata, NoLinks>?
+            let optionalOne: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>?
             
-            let optionalNullableOne: ToOneRelationship<JSONTyped.TestEntity1?, NoMetadata, NoLinks>?
+            let optionalNullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoLinks>?
             
-            let optionalMany: ToManyRelationship<JSONTyped.TestEntity1, NoMetadata, NoLinks>?
+            let optionalMany: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>?
             
             // a nullable many is not allowed. it should
             // just be an empty array.
@@ -1192,8 +1162,8 @@ extension NoResourceObjectTests {
         typealias Attributes = NoAttributes
         
         public struct Relationships: JSONAPI.Relationships {
-            let selfRef: ToOneRelationship<JSONTyped.TestEntity10, NoMetadata, NoLinks>
-            let selfRefs: ToManyRelationship<JSONTyped.TestEntity10, NoMetadata, NoLinks>
+            let selfRef: ToOneRelationship<ResourceObject.TestEntity10, NoMetadata, NoLinks>
+            let selfRefs: ToManyRelationship<ResourceObject.TestEntity10, NoMetadata, NoLinks>
         }
     }
     
@@ -1238,11 +1208,11 @@ extension NoResourceObjectTests {
                 optionalMany = nil
             }
 
-            let optionalOne: ToOneRelationship<JSONTyped.TestEntity1, NoMetadata, NoLinks>?
+            let optionalOne: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>?
 
-            let optionalNullableOne: ToOneRelationship<JSONTyped.TestEntity1?, NoMetadata, NoLinks>?
+            let optionalNullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoLinks>?
 
-            let optionalMany: ToManyRelationship<JSONTyped.TestEntity1, NoMetadata, NoLinks>?
+            let optionalMany: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>?
         }
     }
     
@@ -1273,7 +1243,7 @@ extension NoResourceObjectTests {
         struct Attributes: JSONAPI.Attributes {
             var metaAttribute: (TestEntityWithMetaAttribute) -> Bool {
                 return { entity in
-                    (entity.id.rawValue.count % 2) == 0
+                    return entity.id == .unidentified
                 }
             }
         }
@@ -1290,14 +1260,12 @@ extension NoResourceObjectTests {
         
         struct Relationships: JSONAPI.Relationships {
             var metaRelationship: (TestEntityWithMetaRelationship) -> TestEntity1.NoResourceIdentifier {
-                return { entity in
-                    return TestEntity1.NoResourceIdentifier(rawValue: "hello")
-                }
+                return { _ in TestEntity1.NoResourceIdentifier.unidentified }
             }
             
             var toManyMetaRelationship: (TestEntityWithMetaRelationship) -> [TestEntity1.NoResourceIdentifier] {
                 return { entity in
-                    return [TestEntity1.NoResourceIdentifier.id(from: "hello")]
+                    return [TestEntity1.NoResourceIdentifier.unidentified]
                 }
             }
         }
@@ -1353,7 +1321,7 @@ extension NoResourceObjectTests {
 }
 
 extension NoResourceObjectTests {
-    enum JSONTyped {
+    enum ResourceObject {
         
         enum TestEntityType1: ResourceObjectDescription {
             static var jsonType: String { return "test_entities"}
@@ -1371,11 +1339,11 @@ extension NoResourceObjectTests {
             typealias Attributes = NoAttributes
             
             struct Relationships: JSONAPI.Relationships {
-                let other: ToOneRelationship<JSONTyped.TestEntity1, NoMetadata, NoLinks>
+                let other: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>
             }
         }
         
-        typealias TestEntity2 = BasicEntity<JSONTyped.TestEntityType2>
+        typealias TestEntity2 = BasicEntity<ResourceObject.TestEntityType2>
         
         enum TestEntityType4: ResourceObjectDescription {
             static var jsonType: String { return "fourth_test_entities"}

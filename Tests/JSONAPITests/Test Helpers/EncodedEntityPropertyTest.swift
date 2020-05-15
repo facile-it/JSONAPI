@@ -70,12 +70,7 @@ func testEncoded<E: NoResourceObjectType>(entity: E) {
     XCTAssertNotNil(jsonDict)
 
     let jsonId = jsonDict?["id"]
-
-    if E.EntityRawIdType.self == Unidentified.self {
-        XCTAssertNil(jsonId)
-    } else {
-        XCTAssertNotNil(jsonId)
-    }
+    XCTAssertNil(jsonId)
 
     let jsonType = jsonDict?["type"] as? String
 
