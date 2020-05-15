@@ -49,10 +49,13 @@ extension NoResourceObjectProxy {
     public static var jsonType: String? { return Description.jsonType }
 }
 
+/// A marker protocol.
+public protocol AbstractNoResourceObject {}
+
 /// ResourceObjectType is the protocol that ResourceObject conforms to. This
 /// protocol lets other types accept any ResourceObject as a generic
 /// specialization.
-public protocol NoResourceObjectType: AbstractResourceObject, NoResourceObjectProxy, CodablePrimaryResource where Description: NoResourceObjectDescription {
+public protocol NoResourceObjectType: AbstractNoResourceObject, NoResourceObjectProxy, CodablePrimaryResource where Description: NoResourceObjectDescription {
     associatedtype Meta: JSONAPI.Meta
     associatedtype Links: JSONAPI.Links
     
@@ -90,8 +93,16 @@ NoResourceObjectType {
     }
 }
 
+public protocol NoResourceIdentifiable: OptionalJSONTyped {
+    associatedtype NoResourceIdentifier: Equatable
+}
+
+/// The Relatable protocol describes anything that
+/// has an IdType Identifier
+public protocol NoResourceRelatable: NoResourceIdentifiable where NoResourceIdentifier: JSONAPI.IdType {}
+
 extension NoResourceObject: NoResourceIdentifiable, IdentifiableNoResourceObjectType, NoResourceRelatable where EntityRawIdType: JSONAPI.RawIdType {
-    public typealias Identifier = NoResourceObject.Id
+    public typealias NoResourceIdentifier = NoResourceObject.Id
 }
 
 extension NoResourceObject: CustomStringConvertible {
@@ -120,32 +131,6 @@ extension NoResourceObject where EntityRawIdType == Unidentified {
     }
 }
 
-// MARK: - Pointer for Relationships use
-public extension NoResourceObject where EntityRawIdType: JSONAPI.RawIdType {
-    
-    /// A `ResourceObject.Pointer` is a `ToOneRelationship` with no metadata or links.
-    /// This is just a convenient way to reference a `ResourceObject` so that
-    /// other ResourceObjects' Relationships can be built up from it.
-    typealias Pointer = ToOneRelationshipNoResource<NoResourceObject, NoMetadata, NoLinks>
-    
-    /// `ResourceObject.Pointers` is a `ToManyRelationship` with no metadata or links.
-    /// This is just a convenient way to reference a bunch of ResourceObjects so
-    /// that other ResourceObjects' Relationships can be built up from them.
-    typealias Pointers = ToManyRelationshipNoResource<NoResourceObject, NoMetadata, NoLinks>
-    
-    /// Get a pointer to this resource object that can be used as a
-    /// relationship to another resource object.
-    var pointer: Pointer {
-        return Pointer(resourceObject: self)
-    }
-    
-    /// Get a pointer (i.e. `ToOneRelationship`) to this resource
-    /// object with the given metadata and links attached.
-    func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationshipNoResource<NoResourceObject, MType, LType> {
-        return ToOneRelationshipNoResource(resourceObject: self, meta: meta, links: links)
-    }
-}
-
 // MARK: - Identifying Unidentified Entities
 public extension NoResourceObject where EntityRawIdType == Unidentified {
     /// Create a new `ResourceObject` from this one with a newly created
@@ -156,7 +141,7 @@ public extension NoResourceObject where EntityRawIdType == Unidentified {
     
     /// Create a new `ResourceObject` from this one with the given Id.
     func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> NoResourceObject<Description, MetaType, LinksType, RawIdType> {
-        return .init(id: NoResourceObject<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
+        return .init(id: NoResourceObject<Description, MetaType, LinksType, RawIdType>.NoResourceIdentifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
     }
 }
 
