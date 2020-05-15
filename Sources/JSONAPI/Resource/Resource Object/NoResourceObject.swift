@@ -4,6 +4,19 @@ public protocol OptionalJSONTyped {
     static var jsonType: String? { get }
 }
 
+public struct NoResourceIdDescription: RawIdType {}
+
+public struct NoResourceId: Equatable, IdType {
+    public typealias RawType = NoResourceIdDescription
+    public var rawValue: NoResourceIdDescription
+    
+    public init(rawValue: NoResourceIdDescription) {
+        self.rawValue = rawValue
+    }
+
+    public static let unidentified: Self = .init(rawValue: NoResourceIdDescription())
+}
+
 public protocol NoResourceObjectProxyDescription: OptionalJSONTyped {
     associatedtype Attributes: Equatable
     associatedtype Relationships: Equatable
@@ -28,7 +41,7 @@ public protocol NoResourceObjectProxy: Equatable, OptionalJSONTyped {
     /// the entity is being created clientside and the
     /// server is being asked to create a unique Id. Otherwise,
     /// this should be of a type conforming to `OptionalTypedId`.
-    typealias Id = JSONAPI.OptionalTypedId<EntityRawIdType>
+    typealias Id = NoResourceId
     
     /// The JSON API compliant attributes of this `Entity`.
     typealias Attributes = Description.Attributes
@@ -74,7 +87,7 @@ NoResourceObjectType {
     public typealias Meta = MetaType
     public typealias Links = LinksType
     
-    public var id: NoResourceObject.Id
+    public var id: NoResourceObject.Id = .unidentified
     
     public var attributes: Description.Attributes
     
@@ -84,8 +97,7 @@ NoResourceObjectType {
     
     public var links: LinksType
     
-    public init(id: NoResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-        self.id = id
+    public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
         self.attributes = attributes
         self.relationships = relationships
         self.meta = meta
@@ -107,13 +119,13 @@ extension NoResourceObject: NoResourceIdentifiable, IdentifiableNoResourceObject
 
 extension NoResourceObject: CustomStringConvertible {
     public var description: String {
-        "NoResourceObject<\(NoResourceObject.jsonType ?? "")>(id: \(String(describing: id)), attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
+        "NoResourceObject<\(NoResourceObject.jsonType ?? "")>attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
     }
 }
 
 extension NoResourceObject where EntityRawIdType: CreatableRawIdType {
     public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-        self.id = NoResourceObject.Id()
+        self.id = NoResourceObject.Id.unidentified
         self.attributes = attributes
         self.relationships = relationships
         self.meta = meta
@@ -123,7 +135,6 @@ extension NoResourceObject where EntityRawIdType: CreatableRawIdType {
 
 extension NoResourceObject where EntityRawIdType == Unidentified {
     public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-        self.id = .unidentified
         self.attributes = attributes
         self.relationships = relationships
         self.meta = meta
@@ -141,14 +152,7 @@ public extension NoResourceObject where EntityRawIdType == Unidentified {
     
     /// Create a new `ResourceObject` from this one with the given Id.
     func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> NoResourceObject<Description, MetaType, LinksType, RawIdType> {
-        return .init(id: NoResourceObject<Description, MetaType, LinksType, RawIdType>.NoResourceIdentifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
-    }
-}
-
-public extension NoResourceObject where EntityRawIdType: CreatableRawIdType {
-    /// Create a copy of this `NoResourceObject` with a new unique Id.
-    func withNewIdentifier() -> NoResourceObject {
-        return NoResourceObject(attributes: attributes, relationships: relationships, meta: meta, links: links)
+        return .init(attributes: attributes, relationships: relationships, meta: meta, links: links)
     }
 }
 
@@ -299,7 +303,6 @@ infix operator ~>
 // MARK: - Codable
 private enum NoResourceObjectCodingKeys: String, CodingKey {
     case type = "type"
-    case id = "id"
     case attributes = "attributes"
     case relationships = "relationships"
     case meta = "meta"
@@ -311,10 +314,6 @@ public extension NoResourceObject {
         var container = encoder.container(keyedBy: NoResourceObjectCodingKeys.self)
         
         try container.encode(NoResourceObject.jsonType, forKey: .type)
-        
-        if EntityRawIdType.self != Unidentified.self {
-            try container.encode(id, forKey: .id)
-        }
         
         if Description.Attributes.self != NoAttributes.self {
             let nestedEncoder = container.superEncoder(forKey: .attributes)
@@ -345,9 +344,6 @@ public extension NoResourceObject {
                 found: type ?? "unexpected"
             )
         }
-        
-        let maybeUnidentified = Unidentified() as? EntityRawIdType
-        id = try maybeUnidentified.map { NoResourceObject.Id(rawValue: $0) } ?? container.decode(NoResourceObject.Id.self, forKey: .id)
         
         do {
             attributes = try (NoAttributes() as? Description.Attributes)
