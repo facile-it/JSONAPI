@@ -1018,7 +1018,7 @@ extension ResourceObjectTests {
 
     typealias TestEntity12 = BasicEntity<TestEntityType12>
 
-    
+
 	enum TestEntityType15: ResourceObjectDescription {
 		public static var jsonType: String { return "fifth_test_entities" }
 
