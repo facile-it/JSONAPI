@@ -33,14 +33,13 @@ extension String: RawIdType {}
 /// for assigning it an Id).
 public struct Unidentified: MaybeRawId, CustomStringConvertible {
     public init() {}
-
+    
     public var description: String { return "Unidentified" }
 }
 
 public protocol OptionalId: Codable {
-    associatedtype IdentifiableType: JSONAPI.JSONTyped
     associatedtype RawType: MaybeRawId
-
+    
     var rawValue: RawType { get }
     init(rawValue: RawType)
 }
@@ -52,16 +51,15 @@ public protocol IdType: AbstractId, OptionalId, CustomStringConvertible, Hashabl
 
 extension Optional: MaybeRawId where Wrapped: Codable & Equatable {}
 extension Optional: OptionalId where Wrapped: IdType {
-    public typealias IdentifiableType = Wrapped.IdentifiableType
     public typealias RawType = Wrapped.RawType?
-
+    
     public var rawValue: Wrapped.RawType? {
         guard case .some(let value) = self else {
             return nil
         }
         return value.rawValue
     }
-
+    
     public init(rawValue: Wrapped.RawType?) {
         self = rawValue.map { Wrapped(rawValue: $0) }
     }
@@ -78,19 +76,19 @@ public protocol CreatableIdType: IdType {
 /// An ResourceObject ID. These IDs can be encoded to or decoded from
 /// JSON API IDs.
 public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Equatable, OptionalId {
-
+    
     public let rawValue: RawType
-
+    
     public init(rawValue: RawType) {
         self.rawValue = rawValue
     }
-
+    
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(RawType.self)
         self.init(rawValue: rawValue)
     }
-
+    
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(rawValue)

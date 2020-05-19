@@ -143,7 +143,7 @@ extension RelationshipTests {
 // MARK: Nullable
 extension RelationshipTests {
 	func test_ToOneNullableIsNullIfNil() {
-		let relationship = ToOneNullable(resourceObject: nil)
+        let relationship = ToOneNullable(resourceObject: nil)
 		let relationshipData = try! JSONEncoder().encode(relationship)
 		let relationshipString = String(data: relationshipData, encoding: .utf8)!
 
