@@ -61,3 +61,50 @@ func testEncoded<E: ResourceObjectType>(entity: E) {
 		XCTAssertNotNil(jsonLinks)
 	}
 }
+
+func testEncoded<E: NoResourceObjectType>(entity: E) {
+    let encodedEntityData = encoded(value: entity)
+    let jsonObject = try! JSONSerialization.jsonObject(with: encodedEntityData, options: [])
+    let jsonDict = jsonObject as? [String: Any]
+
+    XCTAssertNotNil(jsonDict)
+
+    let jsonId = jsonDict?["id"]
+    XCTAssertNil(jsonId)
+
+    let jsonType = jsonDict?["type"] as? String
+
+    XCTAssertEqual(jsonType, E.jsonType)
+
+    let jsonAttributes = jsonDict?["attributes"] as? [String: Any]
+
+    if E.Attributes.self == NoAttributes.self {
+        XCTAssertNil(jsonAttributes)
+    } else {
+        XCTAssertNotNil(jsonAttributes)
+    }
+
+    let jsonRelationships = jsonDict?["relationships"] as? [String: Any]
+
+    if E.Relationships.self == NoRelationships.self {
+        XCTAssertNil(jsonRelationships)
+    } else {
+        XCTAssertNotNil(jsonRelationships)
+    }
+
+    let jsonMeta = jsonDict?["meta"] as? [String: Any]
+
+    if E.Meta.self == NoMetadata.self {
+        XCTAssertNil(jsonMeta)
+    } else {
+        XCTAssertNotNil(jsonMeta)
+    }
+
+    let jsonLinks = jsonDict?["links"] as? [String: Any]
+
+    if E.Links.self == NoLinks.self {
+        XCTAssertNil(jsonLinks)
+    } else {
+        XCTAssertNotNil(jsonLinks)
+    }
+}

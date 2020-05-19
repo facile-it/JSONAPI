@@ -21,7 +21,7 @@ class ResourceObjectTests: XCTestCase {
 	func test_relationship_operator_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
-
+        
 		XCTAssertEqual(entity2 ~> \.other, entity1.id)
 	}
 
@@ -1018,7 +1018,7 @@ extension ResourceObjectTests {
 
     typealias TestEntity12 = BasicEntity<TestEntityType12>
 
-    
+
 	enum TestEntityType15: ResourceObjectDescription {
 		public static var jsonType: String { return "fifth_test_entities" }
 
