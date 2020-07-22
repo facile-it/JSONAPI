@@ -1443,21 +1443,21 @@ extension DocumentTests {
 		let bodyData1 = Document<ManyResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(resourceObjects: [article1]),
 																																						  includes: .init(values: [.init(author1)]),
 																																						  meta: .init(total: 50, limit: 5, offset: 5),
-																																						  links: .none)
+                                                                                                                                                          links: NoLinks.none)
 		let bodyData2 = Document<ManyResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(resourceObjects: [article2]),
 																																						  includes: .init(values: [.init(author2)]),
 																																						  meta: .init(total: 60, limit: 5, offset: 5),
-																																						  links: .none)
+                                                                                                                                                          links: NoLinks.none)
 
 		let combined = bodyData1.merging(bodyData2,
 										 combiningMetaWith: { (meta1, meta2) in
-											return .init(total: max(meta1.total, meta2.total), limit: max(meta1.limit, meta2.limit), offset: max(meta1.offset, meta2.offset))
+                                            return .init(total: max(meta1!.total, meta2!.total), limit: max(meta1!.limit, meta2!.limit), offset: max(meta1!.offset, meta2!.offset))
 		},
 										 combiningLinksWith: { _, _ in .none })
 
-		XCTAssertEqual(combined.meta.total, bodyData2.meta.total)
-		XCTAssertEqual(combined.meta.limit, bodyData2.meta.limit)
-		XCTAssertEqual(combined.meta.offset, bodyData1.meta.offset)
+		XCTAssertEqual(combined.meta?.total, bodyData2.meta?.total)
+		XCTAssertEqual(combined.meta?.limit, bodyData2.meta?.limit)
+		XCTAssertEqual(combined.meta?.offset, bodyData1.meta?.offset)
 
 		XCTAssertEqual(combined.includes, bodyData1.includes + bodyData2.includes)
 		XCTAssertEqual(combined.primary, bodyData1.primary + bodyData2.primary)
