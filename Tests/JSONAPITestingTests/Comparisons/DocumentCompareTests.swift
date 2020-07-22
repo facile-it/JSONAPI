@@ -218,8 +218,8 @@ fileprivate let d1 = SingleDocument(
     apiDescription: .none,
     body: .init(resourceObject: r1),
     includes: .none,
-    meta: .none,
-    links: .none
+    meta: NoMetadata.none,
+    links: NoLinks.none
 )
 
 fileprivate let d2 = SingleDocument(
@@ -231,8 +231,8 @@ fileprivate let d3 = ManyDocument(
     apiDescription: .none,
     body: .init(resourceObjects: [r1, r2]),
     includes: .init(values: [.init(r3)]),
-    meta: .none,
-    links: .none
+    meta: NoMetadata.none,
+    links: NoLinks.none
 )
 
 fileprivate let d4 = SingleDocument(
@@ -244,48 +244,48 @@ fileprivate let d5 = ManyDocument(
     apiDescription: .none,
     body: .init(resourceObjects: [r1]),
     includes: .init(values: [.init(r3), .init(r2)]),
-    meta: .none,
-    links: .none
+    meta: NoMetadata.none,
+    links: NoLinks.none
 )
 
 fileprivate let d6 = ManyDocument(
     apiDescription: .none,
     body: .init(resourceObjects: [r1, r1, r2]),
     includes: .init(values: [.init(r3), .init(r2)]),
-    meta: .none,
-    links: .none
+    meta: NoMetadata.none,
+    links: NoLinks.none
 )
 
 fileprivate let d7 = OptionalSingleDocument(
     apiDescription: .none,
     body: .init(resourceObject: nil),
     includes: .none,
-    meta: .none,
-    links: .none
+    meta: NoMetadata.none,
+    links: NoLinks.none
 )
 
 fileprivate let d8 = OptionalSingleDocument(
     apiDescription: .none,
     body: .init(resourceObject: r1),
     includes: .none,
-    meta: .none,
-    links: .none
+    meta: NoMetadata.none,
+    links: NoLinks.none
 )
 
 fileprivate let d9 = OptionalSingleDocument(
     apiDescription: .none,
     body: .init(resourceObject: r2),
     includes: .none,
-    meta: .none,
-    links: .none
+    meta: NoMetadata.none,
+    links: NoLinks.none
 )
 
 fileprivate let d10 = SingleDocument(
     apiDescription: .none,
     body: .init(resourceObject: r2),
     includes: .none,
-    meta: .none,
-    links: .none
+    meta: NoMetadata.none,
+    links: NoLinks.none
 )
 
 fileprivate let d11 = SingleDocumentWithMetaAndLinks(
