@@ -657,11 +657,10 @@ extension DocumentTests {
 								  data: metadata_document_with_links_with_api_description)
 	}
 
-	func test_metaDocumentMissingMeta() {
-		XCTAssertThrowsError(try JSONDecoder().decode(Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: metadata_document_missing_metadata))
-
-		XCTAssertThrowsError(try JSONDecoder().decode(Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: metadata_document_missing_metadata2))
-	}
+    func test_metaDocumentMissingMeta() {
+        XCTAssertNil(try? JSONDecoder().decode(Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: metadata_document_missing_metadata).body.meta)
+        XCTAssertNil(try? JSONDecoder().decode(Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: metadata_document_missing_metadata2).body.meta)
+    }
 }
 
 
@@ -908,11 +907,11 @@ extension DocumentTests {
 	}
 
 	func test_singleDocumentNoIncludesWithMetadataMissingLinks() {
-		XCTAssertThrowsError(try JSONDecoder().decode(Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: single_document_no_includes_with_metadata))
+        XCTAssertNil(try JSONDecoder().decode(Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: single_document_no_includes_with_metadata).body.links)
 	}
 
 	func test_singleDocumentNoIncludesMissingMetadata() {
-		XCTAssertThrowsError(try JSONDecoder().decode(Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: single_document_no_includes))
+		XCTAssertNil(try JSONDecoder().decode(Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: single_document_no_includes).body.meta)
 	}
 	
 	func test_singleDocumentSomeIncludes() {

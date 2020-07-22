@@ -400,14 +400,7 @@ extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody:
             throw DocumentDecodingError(error)
         }
 
-        guard let metaVal = meta else {
-            throw JSONAPICodingError.missingOrMalformedMetadata(path: decoder.codingPath)
-        }
-        guard let linksVal = links else {
-            throw JSONAPICodingError.missingOrMalformedLinks(path: decoder.codingPath)
-        }
-
-        body = .data(.init(primary: data, includes: maybeIncludes ?? Includes<Include>.none, meta: metaVal, links: linksVal))
+        body = .data(.init(primary: data, includes: maybeIncludes ?? Includes<Include>.none, meta: meta, links: links))
     }
 }
 
