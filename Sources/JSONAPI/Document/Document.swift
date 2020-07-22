@@ -31,8 +31,8 @@ public protocol DocumentBodyData: DocumentBodyDataContext {
 
     /// The document's included objects
     var includes: Includes<IncludeType> { get }
-    var meta: MetaType { get }
-    var links: LinksType { get }
+    var meta: MetaType? { get }
+    var links: LinksType? { get }
 }
 
 public protocol DocumentBody: DocumentBodyContext {
@@ -136,8 +136,8 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
     public init(apiDescription: APIDescription,
                 body: PrimaryResourceBody,
                 includes: Includes<Include>,
-                meta: MetaType,
-                links: LinksType) {
+                meta: MetaType?,
+                links: LinksType?) {
         self.body = .data(
             .init(
                 primary: body,
@@ -162,10 +162,10 @@ extension Document {
             public let primary: PrimaryResourceBody
             /// The document's included objects
             public let includes: Includes<Include>
-            public let meta: MetaType
-            public let links: LinksType
+            public let meta: MetaType?
+            public let links: LinksType?
 
-            public init(primary: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
+            public init(primary: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType?, links: LinksType?) {
                 self.primary = primary
                 self.includes = includes
                 self.meta = meta
@@ -206,7 +206,7 @@ extension Document {
                 return data.meta
             case .errors(_, meta: let metadata?, links: _):
                 return metadata
-            default:
+            case .errors(_, meta: .none, links: _):
                 return nil
             }
         }
@@ -226,8 +226,8 @@ extension Document {
 
 extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable {
     public func merging(_ other: Document.Body.Data,
-                        combiningMetaWith metaMerge: (MetaType, MetaType) -> MetaType,
-                        combiningLinksWith linksMerge: (LinksType, LinksType) -> LinksType) -> Document.Body.Data {
+                        combiningMetaWith metaMerge: (MetaType?, MetaType?) -> MetaType?,
+                        combiningLinksWith linksMerge: (LinksType?, LinksType?) -> LinksType?) -> Document.Body.Data {
         return Document.Body.Data(primary: primary.appending(other.primary),
                                   includes: includes.appending(other.includes),
                                   meta: metaMerge(meta, other.meta),
@@ -238,8 +238,8 @@ extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable {
 extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable, MetaType == NoMetadata, LinksType == NoLinks {
     public func merging(_ other: Document.Body.Data) -> Document.Body.Data {
         return merging(other,
-                       combiningMetaWith: { _, _ in .none },
-                       combiningLinksWith: { _, _ in .none })
+                       combiningMetaWith: { _, _ in NoMetadata.none },
+                       combiningLinksWith: { _, _ in NoLinks.none })
     }
 }
 
@@ -361,22 +361,14 @@ extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody:
         if let noMeta = NoMetadata() as? MetaType {
             meta = noMeta
         } else {
-            do {
-                meta = try container.decode(MetaType.self, forKey: .meta)
-            } catch {
-                meta = nil
-            }
+            meta = try? container.decode(MetaType.self, forKey: .meta)
         }
 
         let links: LinksType?
         if let noLinks = NoLinks() as? LinksType {
             links = noLinks
         } else {
-            do {
-                links = try container.decode(LinksType.self, forKey: .links)
-            } catch {
-                links = nil
-            }
+            links = try? container.decode(LinksType.self, forKey: .links)
         }
 
         // If there are errors, there cannot be a body. Return errors and any metadata found.
@@ -510,8 +502,8 @@ extension Document {
         public init(apiDescription: APIDescription,
                     body: PrimaryResourceBody,
                     includes: Includes<Include>,
-                    meta: MetaType,
-                    links: LinksType) {
+                    meta: MetaType?,
+                    links: LinksType?) {
             document = .init(apiDescription: apiDescription,
                              body: body,
                              includes: includes,
