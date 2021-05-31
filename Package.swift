@@ -17,7 +17,7 @@ let package = Package(
             targets: ["JSONAPITesting"])
     ],
     dependencies: [
-        .package(url: "https://github.com/facile-it/Poly.git", .branch("upstream_2_5_2")),
+        .package(url: "https://github.com/facile-it/Poly.git", .exact("2.5.3")),
     ],
     targets: [
         .target(

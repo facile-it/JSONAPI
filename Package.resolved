@@ -5,9 +5,9 @@
         "package": "Poly",
         "repositoryURL": "https://github.com/facile-it/Poly.git",
         "state": {
-          "branch": "upstream_2_5_2",
-          "revision": "a74c8dd85b989701ad18c06c8c54306c3a9afc16",
-          "version": null
+          "branch": null,
+          "revision": "bf7dd504e279e72c1186f03a38d626be7737ab0f",
+          "version": "2.5.3"
         }
       }
     ]
