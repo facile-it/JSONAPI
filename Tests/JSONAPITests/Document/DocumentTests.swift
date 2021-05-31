@@ -39,6 +39,28 @@ class DocumentTests: XCTestCase {
                 links: NoLinks.none
         ))
 
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(
+                body: .none
+        ))
+
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(
+                errors: []
+        ))
+
         // Document.SuccessDocument
         test(JSONAPI.Document<
             NoResourceBody,
@@ -55,6 +77,17 @@ class DocumentTests: XCTestCase {
                 links: NoLinks.none
         ))
 
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >.SuccessDocument(
+                body: .none
+        ))
+
         // Document.ErrorDocument
         test(JSONAPI.Document<
             NoResourceBody,
@@ -65,6 +98,17 @@ class DocumentTests: XCTestCase {
             UnknownJSONAPIError
             >.ErrorDocument(
                 apiDescription: .none,
+                errors: []
+        ))
+
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >.ErrorDocument(
                 errors: []
         ))
     }
@@ -167,7 +211,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
-		guard case let .errors(errors, meta, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
@@ -176,6 +220,7 @@ extension DocumentTests {
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(errors[0], .unknown)
 		XCTAssertEqual(meta, NoMetadata())
+        XCTAssertEqual(links, NoLinks())
 
         // SuccessDocument
         XCTAssertThrowsError(try JSONDecoder().decode(Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.SuccessDocument.self,
@@ -193,8 +238,7 @@ extension DocumentTests {
         XCTAssertNil(document2.body.primaryResource)
         XCTAssertNil(document2.body.includes)
 
-        
-        guard case let .errors(errors2, meta2, _) = document.body else {
+        guard case let .errors(errors2, meta2, links2) = document2.body else {
             XCTFail("Needed body to be in errors case but it was not.")
             return
         }
@@ -203,6 +247,7 @@ extension DocumentTests {
         XCTAssertEqual(errors2, document2.body.errors)
         XCTAssertEqual(errors2[0], .unknown)
         XCTAssertEqual(meta2, NoMetadata())
+        XCTAssertEqual(links2, NoLinks())
 	}
 
 	func test_unknownErrorDocumentAddIncludingType() {
@@ -255,16 +300,17 @@ extension DocumentTests {
 		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
-        
-        guard case let .errors(errors, meta, _) = document.body else {
-            XCTFail("Needed body to be in errors case but it was not.")
-            return
-        }
+
+		guard case let .errors(errors, meta, links) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
 
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(errors[0], .unknown)
 		XCTAssertEqual(meta, NoMetadata())
+        XCTAssertEqual(links, NoLinks())
 	}
 
 	func test_unknownErrorDocumentNoMetaWithAPIDescription_encode() {
@@ -272,24 +318,25 @@ extension DocumentTests {
 								  data: error_document_no_metadata_with_api_description)
 	}
 
-    func test_unknownErrorDocumentMissingMeta() {
-        let document = decoded(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, data: error_document_no_metadata)
-        
-        XCTAssertTrue(document.body.isError)
-        XCTAssertNil(document.body.meta)
-        XCTAssertNil(document.body.primaryResource)
-        XCTAssertNil(document.body.includes)
-        
-        guard case let .errors(errors, meta, _) = document.body else {
-            XCTFail("Needed body to be in errors case but it was not.")
-            return
-        }
-        
-        XCTAssertEqual(errors.count, 1)
-        XCTAssertEqual(errors, document.body.errors)
-        XCTAssertEqual(errors[0], .unknown)
-        XCTAssertNil(meta)
-    }
+	func test_unknownErrorDocumentMissingMeta() {
+		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, data: error_document_no_metadata)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertNil(document.body.meta)
+		XCTAssertNil(document.body.primaryResource)
+		XCTAssertNil(document.body.includes)
+
+		guard case let .errors(errors, meta, links) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.count, 1)
+		XCTAssertEqual(errors, document.body.errors)
+		XCTAssertEqual(errors[0], .unknown)
+		XCTAssertNil(meta)
+        XCTAssertEqual(links, NoLinks())
+	}
 
 	func test_unknownErrorDocumentMissingMeta_encode() {
 		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, data: error_document_no_metadata)
@@ -304,7 +351,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
-		guard case let .errors(errors, meta, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
@@ -313,6 +360,7 @@ extension DocumentTests {
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(errors[0], .unknown)
 		XCTAssertNil(meta)
+        XCTAssertEqual(links, NoLinks())
 	}
 
 	func test_unknownErrorDocumentMissingMetaWithAPIDescription_encode() {
@@ -328,7 +376,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
-		guard case let .errors(errors, meta, _) = document.body else {
+        guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
@@ -337,6 +385,7 @@ extension DocumentTests {
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(errors[0], TestError.basic(.init(code: 1, description: "Boooo!")))
 		XCTAssertEqual(meta, NoMetadata())
+        XCTAssertEqual(links, NoLinks())
 	}
 
 	func test_errorDocumentNoMeta_encode() {
@@ -354,7 +403,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
-		guard case let .errors(errors, meta, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
@@ -363,6 +412,7 @@ extension DocumentTests {
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(errors[0], TestError.basic(.init(code: 1, description: "Boooo!")))
 		XCTAssertEqual(meta, NoMetadata())
+        XCTAssertEqual(links, NoLinks())
 	}
 
 	func test_errorDocumentNoMetaWithAPIDescription_encode() {
@@ -379,7 +429,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
-		guard case let .errors(errors, meta, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
@@ -387,6 +437,7 @@ extension DocumentTests {
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+        XCTAssertEqual(links, NoLinks())
 	}
 
 	func test_unknownErrorDocumentWithMeta_encode() {
@@ -404,7 +455,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
-		guard case let .errors(errors, meta, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
@@ -412,6 +463,7 @@ extension DocumentTests {
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+        XCTAssertEqual(links, NoLinks())
 	}
 
 	func test_unknownErrorDocumentWithMetaWithAPIDescription_encode() {
@@ -428,7 +480,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
-		guard case let .errors(errors, meta, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
@@ -436,6 +488,13 @@ extension DocumentTests {
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+        XCTAssertEqual(
+            links,
+            TestLinks(
+                link: Link(url: "https://website.com", meta: NoMetadata()),
+                link2: Link(url: "https://othersite.com", meta: TestLinks.TestMetadata(hello: "world"))
+            )
+        )
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
 		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
 		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
@@ -457,7 +516,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
-		guard case let .errors(errors, meta, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
@@ -465,6 +524,7 @@ extension DocumentTests {
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
 		XCTAssertEqual(meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+        XCTAssertEqual(links, document.body.links)
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
 		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
 		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
@@ -484,13 +544,15 @@ extension DocumentTests {
 		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
-		guard case let .errors(errors, _, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
 
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
+        XCTAssertNil(meta)
+        XCTAssertEqual(links, document.body.links)
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
 		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
 		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
@@ -511,13 +573,15 @@ extension DocumentTests {
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
-		guard case let .errors(errors, _, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
 
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
+        XCTAssertNil(meta)
+        XCTAssertEqual(links, document.body.links)
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
 		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
 		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
@@ -537,13 +601,15 @@ extension DocumentTests {
 		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
-		guard case let .errors(errors, _, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
 
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
+        XCTAssertNil(meta)
+        XCTAssertNil(links)
 		XCTAssertNil(document.body.links)
 	}
 
@@ -561,13 +627,15 @@ extension DocumentTests {
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
-		guard case let .errors(errors, _, _) = document.body else {
+		guard case let .errors(errors, meta, links) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
 			return
 		}
 
 		XCTAssertEqual(errors.count, 1)
 		XCTAssertEqual(errors, document.body.errors)
+        XCTAssertNil(meta)
+        XCTAssertNil(links)
 		XCTAssertNil(document.body.links)
 	}
 
@@ -1091,11 +1159,16 @@ extension DocumentTests {
 
 extension DocumentTests {
     func test_sparsePrimaryResource() {
-        let primaryResource = Book(attributes: .init(pageCount: 100),
-                                   relationships: .init(author: "1234",
-                                                        series: []),
-                                   meta: .none,
-                                   links: .none)
+        let primaryResource = Book(
+            attributes: .init(pageCount: 100),
+            relationships: .init(
+                author: "1234",
+                series: [],
+                collection: .init(meta: .none, links: .init(link: .init(url: "https://more.books.com"), link2: .init(url: "http://extra.com/books", meta: .init(hello: "world"))))
+            ),
+            meta: .none,
+            links: .none
+        )
             .sparse(with: [.pageCount])
 
         let document = Document<
@@ -1160,20 +1233,30 @@ extension DocumentTests {
     }
 
     func test_sparseIncludeFullPrimaryResource() {
-        let bookInclude = Book(id: "444",
-                               attributes: .init(pageCount: 113),
-                               relationships: .init(author: "1234",
-                                                    series: ["443"]),
-                               meta: .none,
-                               links: .none)
+        let bookInclude = Book(
+            id: "444",
+            attributes: .init(pageCount: 113),
+            relationships: .init(
+                author: "1234",
+                series: ["443"],
+                collection: nil
+            ),
+            meta: .none,
+            links: .none
+        )
             .sparse(with: [])
 
-        let primaryResource = Book(id: "443",
-                                   attributes: .init(pageCount: 100),
-                                   relationships: .init(author: "1234",
-                                                        series: ["444"]),
-                                   meta: .none,
-                                   links: .none)
+        let primaryResource = Book(
+            id: "443",
+            attributes: .init(pageCount: 100),
+            relationships: .init(
+                author: "1234",
+                series: ["444"],
+                collection: nil
+            ),
+            meta: .none,
+            links: .none
+        )
 
         let document = Document<
             SingleResourceBody<Book>,
@@ -1229,20 +1312,30 @@ extension DocumentTests {
     }
 
     func test_sparseIncludeSparsePrimaryResource() {
-        let bookInclude = Book(id: "444",
-                               attributes: .init(pageCount: 113),
-                               relationships: .init(author: "1234",
-                                                    series: ["443"]),
-                               meta: .none,
-                               links: .none)
+        let bookInclude = Book(
+            id: "444",
+            attributes: .init(pageCount: 113),
+            relationships: .init(
+                author: "1234",
+                series: ["443"],
+                collection: nil
+            ),
+            meta: .none,
+            links: .none
+        )
             .sparse(with: [])
 
-        let primaryResource = Book(id: "443",
-                                   attributes: .init(pageCount: 100),
-                                   relationships: .init(author: "1234",
-                                                        series: ["444"]),
-                                   meta: .none,
-                                   links: .none)
+        let primaryResource = Book(
+            id: "443",
+            attributes: .init(pageCount: 100),
+            relationships: .init(
+                author: "1234",
+                series: ["444"],
+                collection: nil
+            ),
+            meta: .none,
+            links: .none
+        )
             .sparse(with: [])
 
         let document = Document<
@@ -1481,7 +1574,7 @@ extension DocumentTests {
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
-			let author: ToOneRelationship<Author, NoMetadata, NoLinks>
+			let author: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
 		}
 	}
 	
@@ -1499,8 +1592,9 @@ extension DocumentTests {
         }
 
         struct Relationships: JSONAPI.Relationships {
-            let author: ToOneRelationship<Author, NoMetadata, NoLinks>
-            let series: ToManyRelationship<Book, NoMetadata, NoLinks>
+            let author: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
+            let series: ToManyRelationship<Book, NoIdMetadata, NoMetadata, NoLinks>
+            let collection: MetaRelationship<NoMetadata, TestLinks>?
         }
     }
 

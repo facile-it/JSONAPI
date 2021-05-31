@@ -30,7 +30,7 @@ class NonJSONAPIRelatableTests: XCTestCase {
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "hello")
 		XCTAssertEqual((entity ~> \.nullableMaybeOne)?.rawValue, "world")
 		XCTAssertEqual((entity ~> \.maybeOne)?.rawValue, "world")
-		XCTAssertEqual((entity ~> \.maybeMany)?.map { $0.rawValue }, ["world", "hello"])
+		XCTAssertEqual((entity ~> \.maybeMany)?.map(\.rawValue), ["world", "hello"])
 	}
 
 	func test_initialization2_all_relationships_missing() {
@@ -58,8 +58,8 @@ extension NonJSONAPIRelatableTests {
 		typealias Attributes = NoAttributes
 
 		struct Relationships: JSONAPI.Relationships {
-			let one: ToOneRelationship<NonJSONAPIEntity, NoMetadata, NoLinks>
-			let many: ToManyRelationship<NonJSONAPIEntity, NoMetadata, NoLinks>
+			let one: ToOneRelationship<NonJSONAPIEntity, NoIdMetadata, NoMetadata, NoLinks>
+			let many: ToManyRelationship<NonJSONAPIEntity, NoIdMetadata, NoMetadata, NoLinks>
 		}
 	}
 
@@ -71,10 +71,10 @@ extension NonJSONAPIRelatableTests {
 		typealias Attributes = NoAttributes
 
 		struct Relationships: JSONAPI.Relationships {
-			let nullableOne: ToOneRelationship<NonJSONAPIEntity?, NoMetadata, NoLinks>
-			let nullableMaybeOne: ToOneRelationship<NonJSONAPIEntity?, NoMetadata, NoLinks>?
-			let maybeOne: ToOneRelationship<NonJSONAPIEntity, NoMetadata, NoLinks>?
-			let maybeMany: ToManyRelationship<NonJSONAPIEntity, NoMetadata, NoLinks>?
+			let nullableOne: ToOneRelationship<NonJSONAPIEntity?, NoIdMetadata, NoMetadata, NoLinks>
+			let nullableMaybeOne: ToOneRelationship<NonJSONAPIEntity?, NoIdMetadata, NoMetadata, NoLinks>?
+			let maybeOne: ToOneRelationship<NonJSONAPIEntity, NoIdMetadata, NoMetadata, NoLinks>?
+			let maybeMany: ToManyRelationship<NonJSONAPIEntity, NoIdMetadata, NoMetadata, NoLinks>?
 		}
 	}
 
@@ -83,7 +83,7 @@ extension NonJSONAPIRelatableTests {
 	struct NonJSONAPIEntity: Relatable, JSONTyped {
 		static var jsonType: String { return "other" }
 
-		typealias Identifier = NonJSONAPIEntity.Id
+		typealias ID = NonJSONAPIEntity.Id
 
 		let id: Id
 

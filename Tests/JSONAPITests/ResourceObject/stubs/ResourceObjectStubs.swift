@@ -233,6 +233,18 @@ let entity_optional_not_omitted_relationship = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
+        "optionalMeta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": {
 				"id": "3323",
@@ -260,6 +272,12 @@ let entity_optional_nullable_nulled_relationship = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": {
 				"id": "3323",
@@ -284,6 +302,12 @@ let entity_omitted_relationship = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": {
 				"id": "3323",
@@ -305,6 +329,12 @@ let entity_optional_to_many_relationship_not_omitted = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": {
 				"id": "3323",
@@ -334,6 +364,12 @@ let entity_nulled_relationship = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": null
 		},
@@ -410,6 +446,34 @@ let entity_nonNullable_relationship_is_null2 = """
     "relationships": {
         "required": {
             "data": null
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_required_relationship_no_id = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": {
+                "type": "thirteenth_test_entities"
+            }
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_required_relationship_no_type = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": {
+                "id": "10"
+            }
         }
     }
 }

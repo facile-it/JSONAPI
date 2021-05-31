@@ -123,8 +123,8 @@ fileprivate enum TestDescription: JSONAPI.ResourceObjectDescription {
     }
 
     struct Relationships: JSONAPI.Relationships {
-        let bestFriend: ToOneRelationship<TestType2?, NoMetadata, NoLinks>
-        let parents: ToManyRelationship<TestType, NoMetadata, NoLinks>
+        let bestFriend: ToOneRelationship<TestType2?, NoIdMetadata, NoMetadata, NoLinks>
+        let parents: ToManyRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks>
     }
 }
 
@@ -140,8 +140,8 @@ fileprivate enum TestDescription2: JSONAPI.ResourceObjectDescription {
     }
 
     struct Relationships: JSONAPI.Relationships {
-        let bestFriend: ToOneRelationship<TestType2?, NoMetadata, NoLinks>
-        let parents: ToManyRelationship<TestType2, NoMetadata, NoLinks>
+        let bestFriend: ToOneRelationship<TestType2?, NoIdMetadata, NoMetadata, NoLinks>
+        let parents: ToManyRelationship<TestType2, NoIdMetadata, NoMetadata, NoLinks>
     }
 }
 

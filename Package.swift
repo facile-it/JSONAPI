@@ -1,5 +1,4 @@
-// swift-tools-version:5.1
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version:5.2
 
 import PackageDescription
 
@@ -18,7 +17,7 @@ let package = Package(
             targets: ["JSONAPITesting"])
     ],
     dependencies: [
-        .package(url: "https://github.com/facile-it/Poly.git", .exact("2.5.0")),
+        .package(url: "https://github.com/facile-it/Poly.git", .branch("upstream_2_5_2")),
     ],
     targets: [
         .target(
