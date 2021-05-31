@@ -77,7 +77,7 @@ final class DocumentDecodingErrorTests: XCTestCase {
             XCTAssertEqual(String(describing: error), "Primary Resource 2 failed to parse because 'author' relationship is required and missing.")
         }
     }
-    
+
     func test_always_valid_includes() {
         let sut = (try? testDecoder
             .decode(
@@ -133,7 +133,7 @@ extension DocumentDecodingErrorTests {
         typealias Attributes = NoAttributes
 
         struct Relationships: JSONAPI.Relationships {
-            let author: ToOneRelationship<Author, NoMetadata, NoLinks>
+            let author: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
         }
     }
 
@@ -151,8 +151,8 @@ extension DocumentDecodingErrorTests {
         }
 
         struct Relationships: JSONAPI.Relationships {
-            let author: ToOneRelationship<Author, NoMetadata, NoLinks>
-            let series: ToManyRelationship<Book, NoMetadata, NoLinks>
+            let author: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
+            let series: ToManyRelationship<Book, NoIdMetadata, NoMetadata, NoLinks>
         }
     }
 

@@ -76,14 +76,15 @@ extension Includes: Decodable where I: Decodable {
                         }
                 }
                 guard errors.count == error.individualTypeFailures.count else {
-                    throw IncludesDecodingError(error: error, idx: idx)
+                    throw IncludesDecodingError(error: error, idx: idx, totalIncludesCount: container.count ?? 0)
                 }
                 throw IncludesDecodingError(
                     error: IncludeDecodingError(failures: errors),
-                    idx: idx
+                    idx: idx,
+                    totalIncludesCount: container.count ?? 0
                 )
             } catch let error {
-                throw IncludesDecodingError(error: error, idx: idx)
+                throw IncludesDecodingError(error: error, idx: idx, totalIncludesCount: container.count ?? 0)
             }
         }
 
@@ -121,7 +122,7 @@ public typealias NoIncludes = Include0
 public typealias Include1 = Poly1
 extension Includes where I: _Poly1 {
     public subscript(_ lookup: I.A.Type) -> [I.A] {
-        return values.compactMap { $0.a }
+        return values.compactMap(\.a)
     }
 }
 
@@ -129,7 +130,7 @@ extension Includes where I: _Poly1 {
 public typealias Include2 = Poly2
 extension Includes where I: _Poly2 {
     public subscript(_ lookup: I.B.Type) -> [I.B] {
-        return values.compactMap { $0.b }
+        return values.compactMap(\.b)
     }
 }
 
@@ -137,7 +138,7 @@ extension Includes where I: _Poly2 {
 public typealias Include3 = Poly3
 extension Includes where I: _Poly3 {
     public subscript(_ lookup: I.C.Type) -> [I.C] {
-        return values.compactMap { $0.c }
+        return values.compactMap(\.c)
     }
 }
 
@@ -145,7 +146,7 @@ extension Includes where I: _Poly3 {
 public typealias Include4 = Poly4
 extension Includes where I: _Poly4 {
     public subscript(_ lookup: I.D.Type) -> [I.D] {
-        return values.compactMap { $0.d }
+        return values.compactMap(\.d)
     }
 }
 
@@ -153,7 +154,7 @@ extension Includes where I: _Poly4 {
 public typealias Include5 = Poly5
 extension Includes where I: _Poly5 {
     public subscript(_ lookup: I.E.Type) -> [I.E] {
-        return values.compactMap { $0.e }
+        return values.compactMap(\.e)
     }
 }
 
@@ -161,7 +162,7 @@ extension Includes where I: _Poly5 {
 public typealias Include6 = Poly6
 extension Includes where I: _Poly6 {
     public subscript(_ lookup: I.F.Type) -> [I.F] {
-        return values.compactMap { $0.f }
+        return values.compactMap(\.f)
     }
 }
 
@@ -169,7 +170,7 @@ extension Includes where I: _Poly6 {
 public typealias Include7 = Poly7
 extension Includes where I: _Poly7 {
     public subscript(_ lookup: I.G.Type) -> [I.G] {
-        return values.compactMap { $0.g }
+        return values.compactMap(\.g)
     }
 }
 
@@ -177,7 +178,7 @@ extension Includes where I: _Poly7 {
 public typealias Include8 = Poly8
 extension Includes where I: _Poly8 {
     public subscript(_ lookup: I.H.Type) -> [I.H] {
-        return values.compactMap { $0.h }
+        return values.compactMap(\.h)
     }
 }
 
@@ -185,7 +186,7 @@ extension Includes where I: _Poly8 {
 public typealias Include9 = Poly9
 extension Includes where I: _Poly9 {
     public subscript(_ lookup: I.I.Type) -> [I.I] {
-        return values.compactMap { $0.i }
+        return values.compactMap(\.i)
     }
 }
 
@@ -193,7 +194,7 @@ extension Includes where I: _Poly9 {
 public typealias Include10 = Poly10
 extension Includes where I: _Poly10 {
     public subscript(_ lookup: I.J.Type) -> [I.J] {
-        return values.compactMap { $0.j }
+        return values.compactMap(\.j)
     }
 }
 
@@ -201,7 +202,7 @@ extension Includes where I: _Poly10 {
 public typealias Include11 = Poly11
 extension Includes where I: _Poly11 {
     public subscript(_ lookup: I.K.Type) -> [I.K] {
-        return values.compactMap { $0.k }
+        return values.compactMap(\.k)
     }
 }
 
@@ -232,7 +233,13 @@ extension Includes where I: _Poly14 {
 // MARK: - DecodingError
 public struct IncludesDecodingError: Swift.Error, Equatable {
     public let error: Swift.Error
+    /// The zero-based index of the include that failed to decode.
     public let idx: Int
+    /// The total count of includes in the document that failed to decode.
+    ///
+    /// In other words, "of `totalIncludesCount` includes, the `(idx + 1)`th
+    /// include failed to decode.
+    public let totalIncludesCount: Int
 
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         return lhs.idx == rhs.idx
@@ -242,7 +249,25 @@ public struct IncludesDecodingError: Swift.Error, Equatable {
 
 extension IncludesDecodingError: CustomStringConvertible {
     public var description: String {
-        return "Include \(idx + 1) failed to parse: \(error)"
+        let ordinalSuffix: String
+        if (idx % 100) + 1 > 9 && (idx % 100) + 1 < 20 {
+            // the teens
+            ordinalSuffix = "th"
+        } else {
+            switch ((idx % 10) + 1) {
+            case 1:
+                ordinalSuffix = "st"
+            case 2:
+                ordinalSuffix = "nd"
+            case 3:
+                ordinalSuffix = "rd"
+            default:
+                ordinalSuffix = "th"
+            }
+        }
+        let ordinalDescription = "\(idx + 1)\(ordinalSuffix)"
+
+        return "Out of the \(totalIncludesCount) includes in the document, the \(ordinalDescription) one failed to parse: \(error)"
     }
 }
 
@@ -250,10 +275,29 @@ public struct IncludeDecodingError: Swift.Error, Equatable, CustomStringConverti
     public let failures: [ResourceObjectDecodingError]
 
     public var description: String {
+        // concise error when all failures are mismatched JSON:API types:
+        if case let .jsonTypeMismatch(foundType: foundType)? = failures.first?.cause,
+           failures.allSatisfy({ $0.cause.isTypeMismatch }) {
+            let expectedTypes = failures
+                .compactMap { "'\($0.resourceObjectJsonAPIType)'" }
+                .joined(separator: ", ")
+
+            return "Found JSON:API type '\(foundType)' but expected one of \(expectedTypes)"
+        }
+
+        // concise error when all but failures but one are type mismatches because
+        // we can assume the correct type was found but there was some other error:
+        let nonTypeMismatches = failures.filter({ !$0.cause.isTypeMismatch})
+        if nonTypeMismatches.count == 1, let nonTypeMismatch = nonTypeMismatches.first {
+            return String(describing: nonTypeMismatch)
+        }
+
+        // fall back to just describing all of the reasons it could not have been any of the available
+        // types:
         return failures
             .enumerated()
             .map {
-                "\nCould not have been Include Type \($0.offset + 1) because:\n\($0.element)"
+                "\nCould not have been Include Type `\($0.element.resourceObjectJsonAPIType)` because:\n\($0.element)"
         }.joined(separator: "\n")
     }
 }

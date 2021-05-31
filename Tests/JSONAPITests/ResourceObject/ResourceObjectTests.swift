@@ -27,7 +27,7 @@ class ResourceObjectTests: XCTestCase {
 
 	func test_optional_relationship_operator_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
+		let entity = TestEntity9(attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalOne, Optional(entity1.id))
 		XCTAssertEqual((entity ~> \.optionalOne).rawValue, Optional(entity1.id.rawValue))
@@ -44,7 +44,7 @@ class ResourceObjectTests: XCTestCase {
 
 	func test_optionalToMany_relationship_opeartor_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
+		let entity = TestEntity9(attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalMany, [entity1.id, entity1.id])
 	}
@@ -72,13 +72,6 @@ class ResourceObjectTests: XCTestCase {
         XCTAssertEqual(entity.me, "hello")
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_unidentifiedEntityAttributeAccess_deprecated() {
-        let entity = UnidentifiedTestEntity(attributes: .init(me: "hello"), relationships: .none, meta: .none, links: .none)
-
-        XCTAssertEqual(entity[\.me], "hello")
-    }
-
 	func test_initialization() {
 		let entity1 = TestEntity1(id: .init(rawValue: "wow"), attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(resourceObject: entity1)), meta: .none, links: .none)
@@ -91,14 +84,14 @@ class ResourceObjectTests: XCTestCase {
 		let _ = TestEntity6(id: .init(rawValue: "6"), attributes: .init(here: .init(value: "here"), maybeHere: nil, maybeNull: .init(value: nil)), relationships: .none, meta: .none, links: .none)
 		let _ = TestEntity7(id: .init(rawValue: "7"), attributes: .init(here: .init(value: "hello"), maybeHereMaybeNull: .init(value: "world")), relationships: .none, meta: .none, links: .none)
 		XCTAssertNoThrow(try TestEntity8(id: .init(rawValue: "8"), attributes: .init(string: .init(value: "hello"), int: .init(value: 10), stringFromInt: .init(rawValue: 20), plus: .init(rawValue: 30), doubleFromInt: .init(rawValue: 32), omitted: nil, nullToString: .init(rawValue: nil)), relationships: .none, meta: .none, links: .none))
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(id: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: .init(resourceObjects: [], meta: .none, links: .none)), meta: .none, links: .none)
-		let e10id1 = TestEntity10.Identifier(rawValue: "hello")
+        let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: .init(meta: .init(x: "hello", y: 5), links: .none), one: entity1.pointer, nullableOne: .init(resourceObject: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: .init(id: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: .init(resourceObjects: [], meta: .none, links: .none)), meta: .none, links: .none)
+		let e10id1 = TestEntity10.ID(rawValue: "hello")
 		let e10id2 = TestEntity10.Id(rawValue: "world")
 		let e10id3: TestEntity10.Id = "!"
 		let _ = TestEntity10(id: .init(rawValue: "10"), attributes: .none, relationships: .init(selfRef: .init(id: e10id1), selfRefs: .init(ids: [e10id2, e10id3])), meta: .none, links: .none)
@@ -170,13 +163,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntityNoRelationshipsSomeAttributes_deprecated() {
-        let entity = decoded(type: TestEntity5.self,
-                             data: entity_no_relationships_some_attributes)
-        XCTAssertEqual(entity[\.floater], 123.321)
-    }
-
 	func test_EntityNoRelationshipsSomeAttributes_encode() {
 		test_DecodeEncodeEquality(type: TestEntity5.self,
 								   data: entity_no_relationships_some_attributes)
@@ -188,7 +174,7 @@ extension ResourceObjectTests {
 
 		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
 
-		XCTAssertEqual((entity ~> \.others).map { $0.rawValue }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
+		XCTAssertEqual((entity ~> \.others).map(\.rawValue), ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
 		XCTAssertNoThrow(try TestEntity3.check(entity))
 
 		testEncoded(entity: entity)
@@ -211,15 +197,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntitySomeRelationshipsSomeAttributes_deprecated() {
-        let entity = decoded(type: TestEntity4.self,
-                             data: entity_some_relationships_some_attributes)
-
-        XCTAssertEqual(entity[\.word], "coolio")
-        XCTAssertEqual(entity[\.number], 992299)
-    }
-
 	func test_EntitySomeRelationshipsSomeAttributes_encode() {
 		test_DecodeEncodeEquality(type: TestEntity4.self,
 								   data: entity_some_relationships_some_attributes)
@@ -241,16 +218,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_entityOneOmittedAttribute_deprecated() {
-        let entity = decoded(type: TestEntity6.self,
-                             data: entity_one_omitted_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertNil(entity[\.maybeHere])
-        XCTAssertEqual(entity[\.maybeNull], "World")
-    }
-
 	func test_entityOneOmittedAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_one_omitted_attribute)
@@ -267,16 +234,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_entityOneNullAttribute_deprecated() {
-        let entity = decoded(type: TestEntity6.self,
-                             data: entity_one_null_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertEqual(entity[\.maybeHere], "World")
-        XCTAssertNil(entity[\.maybeNull])
-    }
 
 	func test_entityOneNullAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
@@ -295,16 +252,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_entityAllAttribute_deprecated() {
-        let entity = decoded(type: TestEntity6.self,
-                             data: entity_all_attributes)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertEqual(entity[\.maybeHere], "World")
-        XCTAssertEqual(entity[\.maybeNull], "!")
-    }
-
 	func test_entityAllAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_all_attributes)
@@ -321,16 +268,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_entityOneNullAndOneOmittedAttribute_deprecated() {
-        let entity = decoded(type: TestEntity6.self,
-                             data: entity_one_null_and_one_missing_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertNil(entity[\.maybeHere])
-        XCTAssertNil(entity[\.maybeNull])
-    }
 
 	func test_entityOneNullAndOneOmittedAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
@@ -353,15 +290,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_NullOptionalNullableAttribute_deprecated() {
-        let entity = decoded(type: TestEntity7.self,
-                             data: entity_null_optional_nullable_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertNil(entity[\.maybeHereMaybeNull])
-    }
-
 	func test_NullOptionalNullableAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity7.self,
 								   data: entity_null_optional_nullable_attribute)
@@ -377,15 +305,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_NonNullOptionalNullableAttribute_deprecated() {
-        let entity = decoded(type: TestEntity7.self,
-                             data: entity_non_null_optional_nullable_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertEqual(entity[\.maybeHereMaybeNull], "World")
-    }
 
 	func test_NonNullOptionalNullableAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity7.self,
@@ -409,19 +328,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_IntToString_deprecated() {
-        let entity = decoded(type: TestEntity8.self,
-                             data: entity_int_to_string_attribute)
-
-        XCTAssertEqual(entity[\.string], "22")
-        XCTAssertEqual(entity[\.int], 22)
-        XCTAssertEqual(entity[\.stringFromInt], "22")
-        XCTAssertEqual(entity[\.plus], 122)
-        XCTAssertEqual(entity[\.doubleFromInt], 22.0)
-        XCTAssertEqual(entity[\.nullToString], "nil")
-    }
 
 	func test_IntToString_encode() {
 		test_DecodeEncodeEquality(type: TestEntity8.self,
@@ -450,6 +356,8 @@ extension ResourceObjectTests {
 		let entity = decoded(type: TestEntity9.self,
 								   data: entity_optional_not_omitted_relationship)
 
+        XCTAssertEqual(entity.relationships.meta.meta, TestEntityMeta(x: "world", y: 5))
+        XCTAssertEqual(entity.relationships.optionalMeta?.meta, TestEntityMeta(x: "world", y: 5))
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
 		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
 		XCTAssertNil(entity ~> \.optionalOne)
@@ -485,6 +393,8 @@ extension ResourceObjectTests {
 		let entity = decoded(type: TestEntity9.self,
 							 data: entity_optional_nullable_nulled_relationship)
 
+        XCTAssertEqual(entity.relationships.meta.meta, TestEntityMeta(x: "world", y: 5))
+        XCTAssertNil(entity.relationships.optionalMeta)
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
 		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
 		XCTAssertNil(entity ~> \.optionalNullableOne)
@@ -578,14 +488,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntity_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntity.self,
-                             data: entity_unidentified)
-
-        XCTAssertNil(entity[\.me])
-    }
-
 	func test_UnidentifiedEntity_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntity.self,
 								   data: entity_unidentified)
@@ -601,14 +503,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntityWithAttributes_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntity.self,
-                             data: entity_unidentified_with_attributes)
-
-        XCTAssertEqual(entity[\.me], "unknown")
-    }
 
 	func test_UnidentifiedEntityWithAttributes_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntity.self,
@@ -632,14 +526,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntityWithAttributesAndMeta_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntityWithMeta.self,
-                             data: entity_unidentified_with_attributes_and_meta)
-
-        XCTAssertEqual(entity[\.me], "unknown")
-    }
-
 	func test_UnidentifiedEntityWithAttributesAndMeta_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithMeta.self,
 								  data: entity_unidentified_with_attributes_and_meta)
@@ -656,14 +542,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntityWithAttributesAndLinks_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntityWithLinks.self,
-                             data: entity_unidentified_with_attributes_and_links)
-
-        XCTAssertEqual(entity[\.me], "unknown")
-    }
 
 	func test_UnidentifiedEntityWithAttributesAndLinks_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithLinks.self,
@@ -684,14 +562,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntityWithAttributesAndMetaAndLinks_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntityWithMetaAndLinks.self,
-                             data: entity_unidentified_with_attributes_and_meta_and_links)
-
-        XCTAssertEqual(entity[\.me], "unknown")
-    }
-
 	func test_UnidentifiedEntityWithAttributesAndMetaAndLinks_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithMetaAndLinks.self,
 								  data: entity_unidentified_with_attributes_and_meta_and_links)
@@ -711,15 +581,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntitySomeRelationshipsSomeAttributesWithMeta_deprecated() {
-        let entity = decoded(type: TestEntity4WithMeta.self,
-                             data: entity_some_relationships_some_attributes_with_meta)
-
-        XCTAssertEqual(entity[\.word], "coolio")
-        XCTAssertEqual(entity[\.number], 992299)
-    }
-
 	func test_EntitySomeRelationshipsSomeAttributesWithMeta_encode() {
 		test_DecodeEncodeEquality(type: TestEntity4WithMeta.self,
 								  data: entity_some_relationships_some_attributes_with_meta)
@@ -737,15 +598,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntitySomeRelationshipsSomeAttributesWithLinks_deprecated() {
-        let entity = decoded(type: TestEntity4WithLinks.self,
-                             data: entity_some_relationships_some_attributes_with_links)
-
-        XCTAssertEqual(entity[\.word], "coolio")
-        XCTAssertEqual(entity[\.number], 992299)
-    }
 
 	func test_EntitySomeRelationshipsSomeAttributesWithLinks_encode() {
 		test_DecodeEncodeEquality(type: TestEntity4WithLinks.self,
@@ -767,19 +619,28 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks_deprecated() {
-        let entity = decoded(type: TestEntity4WithMetaAndLinks.self,
-                             data: entity_some_relationships_some_attributes_with_meta_and_links)
-
-        XCTAssertEqual(entity[\.word], "coolio")
-        XCTAssertEqual(entity[\.number], 992299)
-    }
-
 	func test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks_encode() {
 		test_DecodeEncodeEquality(type: TestEntity4WithMetaAndLinks.self,
 								  data: entity_some_relationships_some_attributes_with_meta_and_links)
 	}
+
+    func test_fullLinksExample() {
+        let entity = decoded(
+            type: ResourceObjectLinksTest.Article.self,
+            data: ResourceObjectLinksTest.json.data(using: .utf8)!
+        )
+
+        XCTAssertEqual(entity.links.`self`.url.absoluteString, "http://example.com/articles/1")
+        XCTAssertEqual(entity.relationships.author.links.`self`.url.absoluteString, "http://example.com/articles/1/relationships/author")
+        XCTAssertEqual(entity.relationships.author.links.related.url.absoluteString, "http://example.com/articles/1/author")
+    }
+
+    func test_fullLinksExample_encode() {
+        test_DecodeEncodeEquality(
+            type: ResourceObjectLinksTest.Article.self,
+            data: ResourceObjectLinksTest.json.data(using: .utf8)!
+        )
+    }
 }
 
 // MARK: With a Meta Attribute
@@ -800,23 +661,6 @@ extension ResourceObjectTests {
         XCTAssertEqual(entity1.metaAttribute, true)
         XCTAssertEqual(entity2.metaAttribute, false)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_MetaEntityAttributeAccessWorks_deprecated() {
-        let entity1 = TestEntityWithMetaAttribute(id: "even",
-                                                  attributes: .init(),
-                                                  relationships: .none,
-                                                  meta: .none,
-                                                  links: .none)
-        let entity2 = TestEntityWithMetaAttribute(id: "odd",
-                                                  attributes: .init(),
-                                                  relationships: .none,
-                                                  meta: .none,
-                                                  links: .none)
-
-        XCTAssertEqual(entity1[\.metaAttribute], true)
-        XCTAssertEqual(entity2[\.metaAttribute], false)
-    }
 }
 
 // MARK: With a Meta Relationship
@@ -861,7 +705,7 @@ extension ResourceObjectTests {
 		typealias Attributes = NoAttributes
 
 		struct Relationships: JSONAPI.Relationships {
-			let other: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>
+			let other: ToOneRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>
 		}
 	}
 
@@ -873,7 +717,7 @@ extension ResourceObjectTests {
 		typealias Attributes = NoAttributes
 
 		struct Relationships: JSONAPI.Relationships {
-			let others: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>
+			let others: ToManyRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>
 		}
 	}
 
@@ -883,7 +727,7 @@ extension ResourceObjectTests {
 		static var jsonType: String { return "fourth_test_entities"}
 
 		struct Relationships: JSONAPI.Relationships {
-			let other: ToOneRelationship<TestEntity2, NoMetadata, NoLinks>
+			let other: ToOneRelationship<TestEntity2, NoIdMetadata, NoMetadata, NoLinks>
 		}
 
 		struct Attributes: JSONAPI.Attributes {
@@ -964,15 +808,19 @@ extension ResourceObjectTests {
 		typealias Attributes = NoAttributes
 
 		public struct Relationships: JSONAPI.Relationships {
-			let one: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>
+            let meta: MetaRelationship<TestEntityMeta, NoLinks>
 
-			let nullableOne: ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>
+            let optionalMeta: MetaRelationship<TestEntityMeta, NoLinks>?
 
-			let optionalOne: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>?
+			let one: ToOneRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>
 
-			let optionalNullableOne: ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>?
+			let nullableOne: ToOneRelationship<TestEntity1?, NoIdMetadata, NoMetadata, NoLinks>
 
-			let optionalMany: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>?
+			let optionalOne: ToOneRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>?
+
+			let optionalNullableOne: ToOneRelationship<TestEntity1?, NoIdMetadata, NoMetadata, NoLinks>?
+
+			let optionalMany: ToManyRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>?
 
 			// a nullable many is not allowed. it should
 			// just be an empty array.
@@ -987,8 +835,8 @@ extension ResourceObjectTests {
 		typealias Attributes = NoAttributes
 
 		public struct Relationships: JSONAPI.Relationships {
-			let selfRef: ToOneRelationship<TestEntity10, NoMetadata, NoLinks>
-			let selfRefs: ToManyRelationship<TestEntity10, NoMetadata, NoLinks>
+			let selfRef: ToOneRelationship<TestEntity10, NoIdMetadata, NoMetadata, NoLinks>
+			let selfRefs: ToManyRelationship<TestEntity10, NoIdMetadata, NoMetadata, NoLinks>
 		}
 	}
 
@@ -1026,16 +874,19 @@ extension ResourceObjectTests {
 
 		public struct Relationships: JSONAPI.Relationships {
 			public init() {
+                optionalMeta = nil
 				optionalOne = nil
 				optionalNullableOne = nil
 				optionalMany = nil
 			}
 
-			let optionalOne: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>?
+            let optionalMeta: MetaRelationship<TestEntityMeta, NoLinks>?
 
-			let optionalNullableOne: ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>?
+			let optionalOne: ToOneRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>?
 
-			let optionalMany: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>?
+			let optionalNullableOne: ToOneRelationship<TestEntity1?, NoIdMetadata, NoMetadata, NoLinks>?
+
+			let optionalMany: ToManyRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>?
 		}
 	}
 
@@ -1081,15 +932,15 @@ extension ResourceObjectTests {
 		typealias Attributes = NoAttributes
 
 		struct Relationships: JSONAPI.Relationships {
-			var metaRelationship: (TestEntityWithMetaRelationship) -> TestEntity1.Identifier {
+			var metaRelationship: (TestEntityWithMetaRelationship) -> TestEntity1.ID {
 				return { entity in
-					return TestEntity1.Identifier(rawValue: "hello")
+					return TestEntity1.ID(rawValue: "hello")
 				}
 			}
 
-            var toManyMetaRelationship: (TestEntityWithMetaRelationship) -> [TestEntity1.Identifier] {
+            var toManyMetaRelationship: (TestEntityWithMetaRelationship) -> [TestEntity1.ID] {
                 return { entity in
-                    return [TestEntity1.Identifier.id(from: "hello")]
+                    return [TestEntity1.ID.id(from: "hello")]
                 }
             }
 		}
@@ -1142,4 +993,62 @@ extension ResourceObjectTests {
 	struct TestEntityLinks: JSONAPI.Links {
 		let link1: Link<String, NoMetadata>
 	}
+}
+
+extension Foundation.URL : JSONAPIURL {}
+
+enum ResourceObjectLinksTest {
+    struct PersonStubDescription: JSONAPI.ResourceObjectDescription {
+        static let jsonType: String = "people"
+
+        typealias Attributes = NoAttributes
+        typealias Relationships = NoRelationships
+    }
+
+    typealias Person = JSONAPI.ResourceObject<PersonStubDescription, NoMetadata, NoLinks, String>
+
+    struct ArticleAuthorRelationshipLinks: JSONAPI.Links {
+        let `self`: JSONAPI.Link<URL, NoMetadata>
+        let related: JSONAPI.Link<URL, NoMetadata>
+    }
+
+    struct ArticleLinks: JSONAPI.Links {
+        let `self`: JSONAPI.Link<URL, NoMetadata>
+    }
+
+    struct ArticleDescription: JSONAPI.ResourceObjectDescription {
+        static let jsonType: String = "articles"
+
+        struct Attributes: JSONAPI.Attributes {
+            let title: Attribute<String>
+        }
+
+        struct Relationships: JSONAPI.Relationships {
+            let author: ToOneRelationship<Person, NoIdMetadata, NoMetadata, ArticleAuthorRelationshipLinks>
+        }
+    }
+
+    typealias Article = JSONAPI.ResourceObject<ArticleDescription, NoMetadata, ArticleLinks, String>
+
+    static let json = """
+    {
+        "type": "articles",
+        "id": "1",
+        "attributes": {
+            "title": "Rails is Omakase"
+        },
+        "relationships": {
+            "author": {
+                "links": {
+                    "self": "http://example.com/articles/1/relationships/author",
+                    "related": "http://example.com/articles/1/author"
+                },
+                "data": { "type": "people", "id": "9" }
+            }
+        },
+        "links": {
+            "self": "http://example.com/articles/1"
+        }
+    }
+    """
 }

@@ -250,7 +250,7 @@ class NoResourceObjectTests: XCTestCase {
             meta: .none,
             links: .none)
         
-        let e10id1 = ResourceObject.TestEntity10.Identifier(rawValue: "hello")
+        let e10id1 = ResourceObject.TestEntity10.Id(rawValue: "hello")
         let e10id2 = ResourceObject.TestEntity10.Id(rawValue: "world")
         let e10id3 = ResourceObject.TestEntity10.Id(rawValue: "!")
         
@@ -1005,7 +1005,7 @@ extension NoResourceObjectTests {
         typealias Attributes = NoAttributes
         
         struct Relationships: JSONAPI.Relationships {
-            let other: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>
+            let other: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoMetadata, NoLinks>
         }
     }
     
@@ -1018,7 +1018,7 @@ extension NoResourceObjectTests {
         typealias Attributes = NoAttributes
         
         struct Relationships: JSONAPI.Relationships {
-            let others: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>
+            let others: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoMetadata, NoLinks>
         }
     }
     
@@ -1030,7 +1030,7 @@ extension NoResourceObjectTests {
         static var jsonType: String? { return nil }
         
         struct Relationships: JSONAPI.Relationships {
-            let other: ToOneRelationship<ResourceObject.TestEntity2, NoMetadata, NoLinks>
+            let other: ToOneRelationship<ResourceObject.TestEntity2, NoMetadata, NoMetadata, NoLinks>
         }
         
         struct Attributes: JSONAPI.Attributes {
@@ -1116,15 +1116,15 @@ extension NoResourceObjectTests {
         typealias Attributes = NoAttributes
         
         public struct Relationships: JSONAPI.Relationships {
-            let one: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>
+            let one: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoMetadata, NoLinks>
             
-            let nullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoLinks>
+            let nullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoMetadata, NoLinks>
             
-            let optionalOne: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>?
+            let optionalOne: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoMetadata, NoLinks>?
             
-            let optionalNullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoLinks>?
+            let optionalNullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoMetadata, NoLinks>?
             
-            let optionalMany: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>?
+            let optionalMany: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoMetadata, NoLinks>?
             
             // a nullable many is not allowed. it should
             // just be an empty array.
@@ -1140,8 +1140,8 @@ extension NoResourceObjectTests {
         typealias Attributes = NoAttributes
         
         public struct Relationships: JSONAPI.Relationships {
-            let selfRef: ToOneRelationship<ResourceObject.TestEntity10, NoMetadata, NoLinks>
-            let selfRefs: ToManyRelationship<ResourceObject.TestEntity10, NoMetadata, NoLinks>
+            let selfRef: ToOneRelationship<ResourceObject.TestEntity10, NoMetadata, NoMetadata, NoLinks>
+            let selfRefs: ToManyRelationship<ResourceObject.TestEntity10, NoMetadata, NoMetadata, NoLinks>
         }
     }
     
@@ -1186,11 +1186,11 @@ extension NoResourceObjectTests {
                 optionalMany = nil
             }
             
-            let optionalOne: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>?
+            let optionalOne: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoMetadata, NoLinks>?
             
-            let optionalNullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoLinks>?
+            let optionalNullableOne: ToOneRelationship<ResourceObject.TestEntity1?, NoMetadata, NoMetadata, NoLinks>?
             
-            let optionalMany: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>?
+            let optionalMany: ToManyRelationship<ResourceObject.TestEntity1, NoMetadata, NoMetadata, NoLinks>?
         }
     }
     
@@ -1317,7 +1317,7 @@ extension NoResourceObjectTests {
             typealias Attributes = NoAttributes
             
             struct Relationships: JSONAPI.Relationships {
-                let other: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoLinks>
+                let other: ToOneRelationship<ResourceObject.TestEntity1, NoMetadata, NoMetadata, NoLinks>
             }
         }
         
@@ -1327,7 +1327,7 @@ extension NoResourceObjectTests {
             static var jsonType: String { return "fourth_test_entities"}
             
             struct Relationships: JSONAPI.Relationships {
-                let other: ToOneRelationship<TestEntity2, NoMetadata, NoLinks>
+                let other: ToOneRelationship<TestEntity2, NoMetadata, NoMetadata, NoLinks>
             }
             
             struct Attributes: JSONAPI.Attributes {
@@ -1345,8 +1345,8 @@ extension NoResourceObjectTests {
             typealias Attributes = NoAttributes
             
             public struct Relationships: JSONAPI.Relationships {
-                let selfRef: ToOneRelationship<TestEntity10, NoMetadata, NoLinks>
-                let selfRefs: ToManyRelationship<TestEntity10, NoMetadata, NoLinks>
+                let selfRef: ToOneRelationship<TestEntity10, NoMetadata, NoMetadata, NoLinks>
+                let selfRefs: ToManyRelationship<TestEntity10, NoMetadata, NoMetadata, NoLinks>
             }
         }
         

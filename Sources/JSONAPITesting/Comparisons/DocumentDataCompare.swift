@@ -10,10 +10,10 @@ import JSONAPI
 public struct DocumentDataComparison: Equatable, PropertyComparison {
     public let primary: PrimaryResourceBodyComparison
     public let includes: IncludesComparison
-    public let meta: BasicComparison
-    public let links: BasicComparison
+    public let meta: BasicComparison?
+    public let links: BasicComparison?
 
-    init(primary: PrimaryResourceBodyComparison, includes: IncludesComparison, meta: BasicComparison, links: BasicComparison) {
+    init(primary: PrimaryResourceBodyComparison, includes: IncludesComparison, meta: BasicComparison?, links: BasicComparison?) {
         self.primary = primary
         self.includes = includes
         self.meta = meta
@@ -25,8 +25,8 @@ public struct DocumentDataComparison: Equatable, PropertyComparison {
             [
                 !primary.isSame ? ("Primary Resource", primary.rawValue) : nil,
                 !includes.isSame ? ("Includes", includes.rawValue) : nil,
-                !meta.isSame ? ("Meta", meta.rawValue) : nil,
-                !links.isSame ? ("Links", links.rawValue) : nil
+                meta.flatMap { !$0.isSame ? ("Meta", $0.rawValue) : nil },
+                links.flatMap { !$0.isSame ? ("Links", $0.rawValue) : nil }
             ].compactMap { $0 },
             uniquingKeysWith: { $1 }
         )

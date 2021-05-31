@@ -78,7 +78,7 @@ public protocol DocumentBody: DocumentBodyContext {
 }
 
 /// An `EncodableJSONAPIDocument` supports encoding but not decoding.
-/// It is actually more restrictive than `JSONAPIDocument` which supports both
+/// It is more restrictive than `CodableJSONAPIDocument` which supports both
 /// encoding and decoding.
 public protocol EncodableJSONAPIDocument: Equatable, Encodable, DocumentBodyContext {
     associatedtype APIDescription: APIDescriptionType
@@ -103,6 +103,38 @@ public protocol EncodableJSONAPIDocument: Equatable, Encodable, DocumentBodyCont
     var apiDescription: APIDescription { get }
 }
 
+/// A Document that can be constructed as successful (i.e. not an error document).
+public protocol SucceedableJSONAPIDocument: EncodableJSONAPIDocument {
+    /// Create a successful JSONAPI:Document.
+    ///
+    /// - Parameters:
+    ///     - apiDescription: The description of the API (a.k.a. the "JSON:API Object").
+    ///     - body: The primary resource body of the JSON:API Document. Generally a single resource or a batch of resources.
+    ///     - includes: All related resources that are included in this Document.
+    ///     - meta: Any metadata associated with the Document.
+    ///     - links: Any links associated with the Document.
+    ///
+    init(
+        apiDescription: APIDescription,
+        body: PrimaryResourceBody,
+        includes: Includes<IncludeType>,
+        meta: MetaType?,
+        links: LinksType?
+    )
+}
+
+/// A Document that can be constructed as failed (i.e. an error document with no primary
+/// resource).
+public protocol FailableJSONAPIDocument: EncodableJSONAPIDocument {
+    /// Create an error JSONAPI:Document.
+    init(
+        apiDescription: APIDescription,
+        errors: [Error],
+        meta: MetaType?,
+        links: LinksType?
+    )
+}
+
 /// A `CodableJSONAPIDocument` supports encoding and decoding of a JSON:API
 /// compliant Document.
 public protocol CodableJSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.CodableResourceBody, IncludeType: Decodable {}
@@ -115,7 +147,7 @@ public protocol CodableJSONAPIDocument: EncodableJSONAPIDocument, Decodable wher
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
-public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, APIDescription: APIDescriptionType, Error: JSONAPIError>: EncodableJSONAPIDocument {
+public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, APIDescription: APIDescriptionType, Error: JSONAPIError>: EncodableJSONAPIDocument, SucceedableJSONAPIDocument, FailableJSONAPIDocument {
     public typealias Include = IncludeType
     public typealias BodyData = Body.Data
 
@@ -125,10 +157,12 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
     // See `EncodableJSONAPIDocument` for documentation.
     public let body: Body
 
-    public init(apiDescription: APIDescription,
-                errors: [Error],
-                meta: MetaType? = nil,
-                links: LinksType? = nil) {
+    public init(
+        apiDescription: APIDescription,
+        errors: [Error],
+        meta: MetaType? = nil,
+        links: LinksType? = nil
+    ) {
         body = .errors(errors, meta: meta, links: links)
         self.apiDescription = apiDescription
     }
@@ -434,14 +468,19 @@ extension Document.Body.Data: CustomStringConvertible {
 extension Document {
     /// A Document that only supports error bodies. This is useful if you wish to pass around a
     /// Document type but you wish to constrain it to error values.
-    public struct ErrorDocument: EncodableJSONAPIDocument {
+    public struct ErrorDocument: EncodableJSONAPIDocument, FailableJSONAPIDocument {
         public typealias BodyData = Document.BodyData
 
         public var body: Document.Body { return document.body }
 
         private let document: Document
 
-        public init(apiDescription: APIDescription, errors: [Error], meta: MetaType? = nil, links: LinksType? = nil) {
+        public init(
+            apiDescription: APIDescription,
+            errors: [Error],
+            meta: MetaType? = nil,
+            links: LinksType? = nil
+        ) {
             document = .init(apiDescription: apiDescription, errors: errors, meta: meta, links: links)
         }
 
@@ -485,23 +524,44 @@ extension Document {
 
     /// A Document that only supports success bodies. This is useful if you wish to pass around a
     /// Document type but you wish to constrain it to success values.
-    public struct SuccessDocument: EncodableJSONAPIDocument {
+    public struct SuccessDocument: EncodableJSONAPIDocument, SucceedableJSONAPIDocument {
         public typealias BodyData = Document.BodyData
+        public typealias APIDescription = Document.APIDescription
+        public typealias Body = Document.Body
+        public typealias PrimaryResourceBody = Document.PrimaryResourceBody
+        public typealias Include = Document.Include
+        public typealias MetaType = Document.MetaType
+        public typealias LinksType = Document.LinksType
 
-        public var body: Document.Body { return document.body }
+        public let apiDescription: APIDescription
+        public let data: BodyData
+        public let body: Body
 
-        private let document: Document
+        public var document: Document {
+            Document(
+                apiDescription: apiDescription,
+                body: data.primary,
+                includes: data.includes,
+                meta: data.meta,
+                links: data.links
+            )
+        }
 
-        public init(apiDescription: APIDescription,
-                    body: PrimaryResourceBody,
-                    includes: Includes<Include>,
-                    meta: MetaType?,
-                    links: LinksType?) {
-            document = .init(apiDescription: apiDescription,
-                             body: body,
-                             includes: includes,
-                             meta: meta,
-                             links: links)
+        public init(
+            apiDescription: APIDescription,
+            body: PrimaryResourceBody,
+            includes: Includes<Include>,
+            meta: MetaType?,
+            links: LinksType?
+        ) {
+            self.apiDescription = apiDescription
+            data = .init(
+                primary: body,
+                includes: includes,
+                meta: meta,
+                links: links
+            )
+            self.body = .data(data)
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -510,50 +570,32 @@ extension Document {
             try container.encode(document)
         }
 
-        /// The JSON API Spec calls this the JSON:API Object. It contains version
-        /// and metadata information about the API itself.
-        public var apiDescription: APIDescription {
-            return document.apiDescription
-        }
-
-        /// Get the document data
-        ///
-        /// `nil` if the Document is an error response. Otherwise,
-        /// a structure containing the primary resource, any included
-        /// resources, metadata, and links.
-        public var data: BodyData? {
-            return document.body.data
-        }
-
         /// Quick access to the `data`'s primary resource.
         ///
-        /// `nil` if the Document is an error document. Otherwise,
-        /// the primary resource body, which will contain zero/one, one/many
+        /// Guaranteed to exist for a `SuccessDocument`.
+        /// The primary resource body, which will contain zero/one, one/many
         /// resources dependening on the `PrimaryResourceBody` type.
         ///
         /// See `SingleResourceBody` and `ManyResourceBody`.
-        public var primaryResource: PrimaryResourceBody? {
-            return document.body.primaryResource
+        public var primaryResource: PrimaryResourceBody {
+            return data.primary
         }
 
         /// Quick access to the `data`'s includes.
         ///
-        /// `nil` if the Document is an error document. Otherwise,
-        /// zero or more includes.
-        public var includes: Includes<IncludeType>? {
-            return document.body.includes
+        /// Zero or more includes.
+        public var includes: Includes<IncludeType> {
+            return data.includes
         }
 
-        /// The metadata for the error or data document or `nil` if
-        /// no metadata is found.
+        /// The metadata for the data document.
         public var meta: MetaType? {
-            return document.body.meta
+            return data.meta
         }
 
-        /// The links for the error or data document or `nil` if
-        /// no links are found.
+        /// The links for the data document.
         public var links: LinksType? {
-            return document.body.links
+            return data.links
         }
 
         public static func ==(lhs: Document, rhs: SuccessDocument) -> Bool {
@@ -584,11 +626,15 @@ extension Document.SuccessDocument: Decodable, CodableJSONAPIDocument
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
-        document = try container.decode(Document.self)
+        let document = try container.decode(Document.self)
 
-        guard !document.body.isError else {
+        guard case .data(let data) = document.body else {
             throw DocumentDecodingError.foundErrorDocumentWhenExpectingSuccess
         }
+
+        self.apiDescription = document.apiDescription
+        self.data = data
+        self.body = .data(data)
     }
 }
 
@@ -631,5 +677,39 @@ extension Document.SuccessDocument where IncludeType: _Poly1 {
         case .errors:
             fatalError("SuccessDocument cannot end up in an error state")
         }
+    }
+}
+
+extension Document where MetaType == NoMetadata, LinksType == NoLinks, IncludeType == NoIncludes, APIDescription == NoAPIDescription {
+    public init(body: PrimaryResourceBody) {
+        self.init(
+            apiDescription: .none,
+            body: body,
+            includes: .none,
+            meta: Optional.none,
+            links: Optional.none
+        )
+    }
+
+    public init(errors: [Error]) {
+        self.init(apiDescription: .none, errors: errors)
+    }
+}
+
+extension Document.SuccessDocument where Document.MetaType == NoMetadata, Document.LinksType == NoLinks, Document.IncludeType == NoIncludes, Document.APIDescription == NoAPIDescription {
+    public init(body: PrimaryResourceBody) {
+        self.init(
+            apiDescription: .none,
+            body: body,
+            includes: .none,
+            meta: Optional.none,
+            links: Optional.none
+        )
+    }
+}
+
+extension Document.ErrorDocument where Document.MetaType == NoMetadata, Document.LinksType == NoLinks, Document.IncludeType == NoIncludes, Document.APIDescription == NoAPIDescription {
+    public init(errors: [Error]) {
+        self.init(apiDescription: .none, errors: errors)
     }
 }
